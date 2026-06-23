@@ -13,6 +13,15 @@ import "./types/global.d.ts";
 // Lazy load route components for better code splitting
 const Landing = lazy(() => import("./pages/Landing.tsx"));
 const AuthPage = lazy(() => import("./pages/Auth.tsx"));
+const Catalog = lazy(() => import("./pages/Catalog.tsx"));
+const ProductDetail = lazy(() => import("./pages/ProductDetail.tsx"));
+const Cart = lazy(() => import("./pages/Cart.tsx"));
+const Checkout = lazy(() => import("./pages/Checkout.tsx"));
+const DeliveryPayment = lazy(() => import("./pages/DeliveryPayment.tsx"));
+const About = lazy(() => import("./pages/About.tsx"));
+const Wishlist = lazy(() => import("./pages/Wishlist.tsx"));
+const Account = lazy(() => import("./pages/Account.tsx"));
+const Contacts = lazy(() => import("./pages/Contacts.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
 // Simple loading fallback for route transitions
@@ -62,7 +71,17 @@ createRoot(document.getElementById("root")!).render(
           <Suspense fallback={<RouteLoading />}>
             <Routes>
               <Route path="/" element={<Landing />} />
-              <Route path="/auth" element={<AuthPage redirectAfterAuth="/" />} /> {/* TODO: change redirect after auth to correct page */}
+              <Route path="/auth" element={<AuthPage redirectAfterAuth="/" />} />
+              <Route path="/catalog" element={<Catalog />} />
+              <Route path="/product/:slug" element={<ProductDetail />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/delivery" element={<DeliveryPayment />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/wishlist" element={<Wishlist />} />
+              <Route path="/account" element={<Account />} />
+              <Route path="/contacts" element={<Contacts />} />
+              <Route path="/auth/redirect" element={<AuthPage redirectAfterAuth="/account" />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

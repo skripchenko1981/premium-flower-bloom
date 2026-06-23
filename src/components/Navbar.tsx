@@ -238,7 +238,7 @@ export default function Navbar() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="border-rose-200 text-rose-500 hover:bg-rose-50 hover:text-rose-600 transition-all"">Увійти</Button>
+                      className="border-rose-200 text-rose-500 hover:bg-rose-50 hover:text-rose-600 transition-all">Увійти</Button>
                   </Link>
                 ))}
 
