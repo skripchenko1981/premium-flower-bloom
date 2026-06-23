@@ -20,14 +20,14 @@ import { cn } from "@/lib/utils";
 import Navbar from "@/components/Navbar";
 
 const faqs = [
-  { q: "What is the minimum order amount?", a: "The minimum order is ₴500. For orders over ₴2,000, delivery within the city is free." },
-  { q: "Can I change the delivery address after placing an order?", a: "Yes, you can change the address before the courier departs. Please call us at +380 (44) 123-45-67." },
-  { q: "What payment methods are available?", a: "We accept online card payments (Visa, Mastercard), cash on delivery, and Apple/Google Pay." },
-  { q: "How are flowers packed?", a: "Each bouquet is packed in a premium kraft paper wrapper with a hydration pack. We also add fresh flower food for longevity." },
-  { q: "Can I return the bouquet?", a: "According to Ukrainian law, flowers are not subject to return or exchange. However, if the flowers arrive wilted, we will replace them." },
-  { q: "Do you deliver outside the city?", a: "Yes, we deliver to the suburbs and region for an additional fee. Check with our manager for rates." },
-  { q: "How long do flowers last?", a: "With proper care (daily water change, trimmed stems), roses can last 7–14 days, tulips 5–7 days, and orchids several weeks." },
-  { q: "Can I order anonymously for a recipient?", a: "Of course! In the order notes, simply specify that you don't want to reveal your name to the recipient." },
+  { q: "Яка мінімальна сума замовлення?", a: "Мінімальне замовлення — ₴500. Для замовлень понад ₴2 000 доставка по місту безкоштовна." },
+  { q: "Чи можна змінити адресу доставки після оформлення замовлення?", a: "Так, ви можете змінити адресу до виїзду кур'єра. Зателефонуйте нам за номером +380 (44) 123-45-67." },
+  { q: "Які способи оплати доступні?", a: "Приймаємо онлайн-оплату картками (Visa, Mastercard), готівкою при отриманні та Apple/Google Pay." },
+  { q: "Як упаковуються квіти?", a: "Кожен букет упаковується в преміум крафтовий папір із гідратаційним пакетом. Також додаємо свіжу підкормку для квітів." },
+  { q: "Чи можна повернути букет?", a: "Відповідно до українського законодавства, квіти не підлягають поверненню чи обміну. Однак, якщо квіти прибули зів'ялими, ми їх замінимо." },
+  { q: "Чи доставляєте ви за межі міста?", a: "Так, доставляємо в передмістя та область за додаткову плату. Уточнюйте вартість у менеджера." },
+  { q: "Як довго стоять квіти?", a: "При належному догляді (щоденна зміна води, підрізання стебел) троянди можуть стояти 7–14 днів, тюльпани 5–7 днів, орхідеї — кілька тижнів." },
+  { q: "Чи можна замовити анонімно для отримувача?", a: "Звісно! У примітках до замовлення просто вкажіть, що не хочете розкривати своє ім'я отримувачу." },
 ];
 
 function FadeInSection({ children, className, delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
@@ -53,13 +53,13 @@ export default function DeliveryPayment() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <Badge className="mb-4 bg-rose-100 text-rose-600 hover:bg-rose-100 border-none">
               <Truck className="w-3.5 h-3.5 mr-2" />
-              Information
+              Інформація
             </Badge>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-light text-stone-900 font-serif tracking-tight">
-              Delivery & <span className="text-rose-400 italic">Payment</span>
+              Доставка та <span className="text-rose-400 italic">Оплата</span>
             </h1>
             <p className="mt-3 text-stone-500 max-w-lg mx-auto">
-              We make sure your flowers arrive fresh, on time, and beautifully presented.
+              Ми дбаємо про те, щоб ваші квіти прибули свіжими, вчасно та в гарному оформленні.
             </p>
           </motion.div>
         </div>
@@ -70,7 +70,7 @@ export default function DeliveryPayment() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInSection className="text-center mb-14">
             <h2 className="text-3xl sm:text-4xl font-light text-stone-900 font-serif tracking-tight">
-              Delivery <span className="text-rose-400 italic">Methods</span>
+              Способи <span className="text-rose-400 italic">доставки</span>
             </h2>
           </FadeInSection>
 
@@ -78,24 +78,24 @@ export default function DeliveryPayment() {
             {[
               {
                 icon: Clock,
-                title: "Express Delivery",
+                title: "Експрес доставка",
                 price: "₴300",
-                desc: "Within 60–90 minutes of order confirmation. The fastest way to send flowers.",
-                features: ["Delivery in 60–90 min", "SMS notification", "Courier tracking"],
+                desc: "Протягом 60–90 хвилин після підтвердження замовлення. Найшвидший спосіб надіслати квіти.",
+                features: ["Доставка за 60–90 хв", "SMS-сповіщення", "Відстеження кур'єра"],
               },
               {
                 icon: Truck,
-                title: "Standard Delivery",
-                price: "₴150 / Free from ₴2000",
-                desc: "Within 2–4 hours. Available throughout the city every day.",
-                features: ["Delivery in 2–4 hours", "Free for orders over ₴2000", "Contactless delivery available"],
+                title: "Стандартна доставка",
+                price: "₴150 / Безкоштовно від ₴2000",
+                desc: "Протягом 2–4 годин. Доступна по всьому місту щодня.",
+                features: ["Доставка за 2–4 години", "Безкоштовно для замовлень від ₴2000", "Доступна безконтактна доставка"],
               },
               {
                 icon: Store,
-                title: "Pickup",
-                price: "Free",
-                desc: "Pick up your bouquet at our store. We'll have it ready at the agreed time.",
-                features: ["Khreshchatyk St, 25", "Mon–Sun, 8:00–22:00", "Pre-order recommended"],
+                title: "Самовивіз",
+                price: "Безкоштовно",
+                desc: "Заберіть свій букет у нашому магазині. Підготуємо до узгодженого часу.",
+                features: ["вул. Хрещатик, 25", "Пн–Нд, 8:00–22:00", "Рекомендуємо попереднє замовлення"],
               },
             ].map((method, i) => (
               <FadeInSection key={method.title} delay={i * 0.1}>
@@ -126,16 +126,16 @@ export default function DeliveryPayment() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInSection className="text-center mb-14">
             <h2 className="text-3xl sm:text-4xl font-light text-stone-900 font-serif tracking-tight">
-              Delivery <span className="text-rose-400 italic">Zones</span>
+              Зони <span className="text-rose-400 italic">доставки</span>
             </h2>
           </FadeInSection>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {[
-              { zone: "Center", price: "from ₴150", areas: "Shevchenkivskyi, Pecherskyi, Podilskyi", time: "60–90 min" },
-              { zone: "Near Center", price: "from ₴200", areas: "Holosiivskyi, Solomianskyi, Darnytskyi", time: "90–120 min" },
-              { zone: "Outskirts", price: "from ₴300", areas: "Obolonskyi, Desnianskyi, Sviatoshynskyi", time: "2–3 hours" },
-              { zone: "Suburbs", price: "from ₴500", areas: "Brovary, Boryspil, Irpin, Vyshneve", time: "3–5 hours" },
+              { zone: "Центр", price: "від ₴150", areas: "Шевченківський, Печерський, Подільський", time: "60–90 хв" },
+              { zone: "Ближче до центру", price: "від ₴200", areas: "Голосіївський, Солом'янський, Дарницький", time: "90–120 хв" },
+              { zone: "Околиці", price: "від ₴300", areas: "Оболонський, Деснянський, Святошинський", time: "2–3 години" },
+              { zone: "Передмістя", price: "від ₴500", areas: "Бровари, Бориспіль, Ірпінь, Вишневе", time: "3–5 годин" },
             ].map((zone, i) => (
               <FadeInSection key={zone.zone} delay={i * 0.1}>
                 <div className="p-6 rounded-2xl border border-stone-100 bg-[#fefdfb] hover:border-rose-100 transition-all duration-300">
@@ -158,16 +158,16 @@ export default function DeliveryPayment() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInSection className="text-center mb-14">
             <h2 className="text-3xl sm:text-4xl font-light text-stone-900 font-serif tracking-tight">
-              Payment <span className="text-rose-400 italic">Methods</span>
+              Способи <span className="text-rose-400 italic">оплати</span>
             </h2>
           </FadeInSection>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {[
-              { icon: CreditCard, title: "Card Online", desc: "Visa, Mastercard. Secure payment via LiqPay." },
-              { icon: Wallet, title: "Cash on Delivery", desc: "Pay the courier upon receiving your order." },
-              { icon: Smartphone, title: "Apple / Google Pay", desc: "Quick and secure one-tap payment." },
-              { icon: Banknote, title: "Bank Transfer", desc: "For corporate clients. Invoice provided." },
+              { icon: CreditCard, title: "Картка онлайн", desc: "Visa, Mastercard. Безпечний платіж через LiqPay." },
+              { icon: Wallet, title: "Готівка при отриманні", desc: "Оплатіть кур'єру при отриманні замовлення." },
+              { icon: Smartphone, title: "Apple / Google Pay", desc: "Швидкий і безпечний платіж в один дотик." },
+              { icon: Banknote, title: "Банківський переказ", desc: "Для корпоративних клієнтів. Надається рахунок." },
             ].map((method, i) => (
               <FadeInSection key={method.title} delay={i * 0.1}>
                 <div className="bg-white rounded-2xl border border-stone-100 p-6 shadow-sm hover:shadow-md transition-all duration-300 text-center">
@@ -188,15 +188,15 @@ export default function DeliveryPayment() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInSection className="text-center mb-14">
             <h2 className="text-3xl sm:text-4xl font-light text-stone-900 font-serif tracking-tight">
-              Our <span className="text-rose-400 italic">Guarantees</span>
+              Наші <span className="text-rose-400 italic">Гарантії</span>
             </h2>
           </FadeInSection>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
             {[
-              { icon: ShieldCheck, title: "Freshness Guarantee", desc: "If the flowers wilt within 3 days, we will replace the bouquet free of charge." },
-              { icon: Package, title: "Secure Packaging", desc: "Each bouquet is packed in a hydration pack and kraft wrapper. Protected from wind, cold, and heat." },
-              { icon: Flower2, title: "Photo Before Delivery", desc: "We send a photo of the finished bouquet before the courier departs so you know exactly what's being delivered." },
+              { icon: ShieldCheck, title: "Гарантія свіжості", desc: "Якщо квіти зів'януть протягом 3 днів, ми замінимо букет безкоштовно." },
+              { icon: Package, title: "Надійне пакування", desc: "Кожен букет упакований у гідратаційний пакет та крафтову обгортку. Захист від вітру, холоду та спеки." },
+              { icon: Flower2, title: "Фото перед відправкою", desc: "Надсилаємо фото готового букета перед виїздом кур'єра, щоб ви знали, що саме буде доставлено." },
             ].map((g, i) => (
               <FadeInSection key={g.title} delay={i * 0.1}>
                 <div className="p-8 rounded-2xl border border-stone-100 bg-[#fefdfb] hover:border-green-100 transition-all duration-300 text-center">
@@ -217,7 +217,7 @@ export default function DeliveryPayment() {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInSection className="text-center mb-14">
             <h2 className="text-3xl sm:text-4xl font-light text-stone-900 font-serif tracking-tight">
-              Frequently Asked <span className="text-rose-400 italic">Questions</span>
+              Часті <span className="text-rose-400 italic">Запитання</span>
             </h2>
           </FadeInSection>
 

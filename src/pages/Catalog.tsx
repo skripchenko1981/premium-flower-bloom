@@ -21,22 +21,22 @@ import { cn } from "@/lib/utils";
 import Navbar from "@/components/Navbar";
 
 const categoriesList = [
-  { name: "All", slug: "" },
-  { name: "Roses", slug: "roses" },
-  { name: "Tulips", slug: "tulips" },
-  { name: "Peonies", slug: "peonies" },
-  { name: "Orchids", slug: "orchids" },
-  { name: "Wedding", slug: "wedding" },
-  { name: "Author's", slug: "author" },
-  { name: "Plants", slug: "plants" },
-  { name: "Gift Sets", slug: "gifts" },
+  { name: "Усі", slug: "" },
+  { name: "Троянди", slug: "roses" },
+  { name: "Тюльпани", slug: "tulips" },
+  { name: "Півонії", slug: "peonies" },
+  { name: "Орхідеї", slug: "orchids" },
+  { name: "Весілля", slug: "wedding" },
+  { name: "Авторські", slug: "author" },
+  { name: "Рослини", slug: "plants" },
+  { name: "Подарунки", slug: "gifts" },
 ];
 
 const sortOptions = [
-  { label: "Newest", value: "" },
-  { label: "Price: Low–High", value: "price-asc" },
-  { label: "Price: High–Low", value: "price-desc" },
-  { label: "Name: A–Z", value: "name" },
+  { label: "Новинки", value: "" },
+  { label: "Ціна: Низька–Висока", value: "price-asc" },
+  { label: "Ціна: Висока–Низька", value: "price-desc" },
+  { label: "Назва: А–Я", value: "name" },
 ];
 
 const productImages = {
@@ -122,10 +122,10 @@ export default function Catalog() {
             transition={{ duration: 0.5 }}
           >
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-light text-stone-900 font-serif tracking-tight">
-              Our <span className="text-rose-400 italic">Catalog</span>
+              Наш <span className="text-rose-400 italic">Каталог</span>
             </h1>
             <p className="mt-2 text-stone-500">
-              {filteredProducts.length} bouquets and flower arrangements
+              {filteredProducts.length} букетів та квіткових композицій
             </p>
           </motion.div>
         </div>
@@ -207,7 +207,7 @@ export default function Catalog() {
               >
                 <div className="py-4 border-t border-stone-100 flex flex-wrap gap-4 items-end">
                   <div className="flex-1 min-w-[200px]">
-                    <label className="text-xs text-stone-400 font-medium mb-1.5 block">Price: from</label>
+                    <label className="text-xs text-stone-400 font-medium mb-1.5 block">Ціна: від</label>
                     <Input
                       type="number"
                       value={priceRange[0]}
@@ -217,7 +217,7 @@ export default function Catalog() {
                     />
                   </div>
                   <div className="flex-1 min-w-[200px]">
-                    <label className="text-xs text-stone-400 font-medium mb-1.5 block">Price: to</label>
+                    <label className="text-xs text-stone-400 font-medium mb-1.5 block">Ціна: до</label>
                     <Input
                       type="number"
                       value={priceRange[1]}
@@ -231,7 +231,7 @@ export default function Catalog() {
                     onClick={() => { setPriceRange([0, 5000]); setSortBy(""); }}
                     className="text-stone-400 hover:text-rose-500"
                   >
-                    Reset All
+                    Скинути все
                     <X className="ml-1 w-3.5 h-3.5" />
                   </Button>
                 </div>
@@ -246,13 +246,13 @@ export default function Catalog() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {filteredProducts.length === 0 ? (
             <div className="text-center py-20">
-              <p className="text-stone-400 text-lg">No products found.</p>
+              <p className="text-stone-400 text-lg">Товарів не знайдено.</p>
               <Button
                 variant="link"
                 onClick={() => { setActiveCategory(""); setSearch(""); setPriceRange([0, 5000]); }}
                 className="text-rose-400 mt-2"
               >
-                Clear all filters
+                Очистити фільтри
               </Button>
             </div>
           ) : gridView ? (
@@ -308,7 +308,7 @@ function ProductCard({ product, categoriesList }: { product: any; categoriesList
         {!product.inStock && (
           <div className="absolute inset-0 bg-white/60 flex items-center justify-center">
             <Badge className="bg-stone-200 text-stone-600 border-none text-sm px-4 py-2">
-              Out of stock
+              Немає в наявності
             </Badge>
           </div>
         )}
@@ -336,7 +336,7 @@ function ProductCard({ product, categoriesList }: { product: any; categoriesList
         )}
         <Button className="w-full mt-3 bg-stone-800 hover:bg-rose-400 text-white rounded-xl transition-all duration-300 text-xs sm:text-sm" size="sm">
           <ShoppingCart className="w-3.5 h-3.5 mr-1.5" />
-          Add to Cart
+          У кошик
         </Button>
       </div>
     </div>
@@ -362,7 +362,7 @@ function ProductRow({ product, categoriesList }: { product: any; categoriesList:
         <div className="text-lg font-medium text-stone-800">₴{product.price}</div>
         {product.inStock ? (
           <Button size="sm" className="mt-2 bg-stone-800 hover:bg-rose-400 text-white rounded-xl text-xs transition-all">
-            <ShoppingCart className="w-3 h-3 mr-1" /> Buy
+            <ShoppingCart className="w-3 h-3 mr-1" /> Купити
           </Button>
         ) : (
           <Badge className="mt-2 bg-stone-100 text-stone-400 border-none">Out of stock</Badge>

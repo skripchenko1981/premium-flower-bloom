@@ -100,9 +100,9 @@ export default function ProductDetail() {
       <div className="min-h-screen bg-[#fefdfb] flex items-center justify-center">
         <div className="text-center">
           <Flower2 className="w-16 h-16 text-rose-300 mx-auto mb-4" />
-          <h1 className="text-2xl font-light text-stone-800 font-serif">Product not found</h1>
+          <h1 className="text-2xl font-light text-stone-800 font-serif">Товар не знайдено</h1>
           <Button onClick={() => navigate("/catalog")} className="mt-4 bg-rose-400 hover:bg-rose-500 text-white rounded-xl">
-            Back to Catalog
+            До каталогу
           </Button>
         </div>
       </div>
@@ -119,7 +119,7 @@ export default function ProductDetail() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Breadcrumb */}
           <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-stone-400 hover:text-rose-500 text-sm mb-8 transition-colors">
-            <ChevronLeft className="w-4 h-4" /> Back
+            <ChevronLeft className="w-4 h-4" /> Назад
           </button>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
@@ -178,7 +178,7 @@ export default function ProductDetail() {
                     <Star key={star} className="w-4 h-4 fill-amber-400 text-amber-400" />
                   ))}
                 </div>
-                <span className="text-sm text-stone-400">4.9 (128 reviews)</span>
+                <span className="text-sm text-stone-400">4.9 (128 відгуків)</span>
               </div>
 
               {/* Price */}
@@ -195,7 +195,7 @@ export default function ProductDetail() {
               {/* Sizes */}
               {data.sizes && (
                 <div className="mt-8">
-                  <label className="text-sm font-medium text-stone-700 mb-3 block">Size:</label>
+                  <label className="text-sm font-medium text-stone-700 mb-3 block">Розмір:</label>
                   <div className="flex flex-wrap gap-3">
                     {data.sizes.map((size: any) => (
                       <button
@@ -227,7 +227,7 @@ export default function ProductDetail() {
                     className="w-4 h-4 rounded border-stone-300 text-rose-400 focus:ring-rose-400"
                   />
                   <Gift className="w-5 h-5 text-rose-400" />
-                  <span className="text-sm font-medium text-stone-700">Add greeting card</span>
+                  <span className="text-sm font-medium text-stone-700">Додати листівку</span>
                   <span className="text-xs text-stone-400 ml-auto">+ ₴50</span>
                 </label>
                 {withCard && (
@@ -237,7 +237,7 @@ export default function ProductDetail() {
                     className="mt-3"
                   >
                     <Textarea
-                      placeholder="Write your message..."
+                      placeholder="Напишіть повідомлення..."
                       value={cardMessage}
                       onChange={(e) => setCardMessage(e.target.value)}
                       className="text-sm border-stone-200 rounded-xl resize-none h-20"
@@ -256,7 +256,7 @@ export default function ProductDetail() {
                   className="flex-1 bg-stone-800 hover:bg-rose-400 text-white rounded-xl py-6 text-base font-normal transition-all duration-300 shadow-lg shadow-stone-200/50 hover:shadow-rose-200/50"
                 >
                   <ShoppingCart className="w-5 h-5 mr-2" />
-                  {addedToCart ? "Added ✓" : "Add to Cart"}
+                  {addedToCart ? "Додано ✓" : "У кошик"}
                 </Button>
                 <Button
                   size="lg"
@@ -283,9 +283,9 @@ export default function ProductDetail() {
               {/* Delivery Info */}
               <div className="mt-8 grid grid-cols-3 gap-3">
                 {[
-                  { icon: Truck, label: "Delivery today", sub: "from 2 hours" },
-                  { icon: ShieldCheck, label: "Freshness", sub: "100% guarantee" },
-                  { icon: Clock, label: "Order 24/7", sub: "any time" },
+                  { icon: Truck, label: "Доставка сьогодні", sub: "від 2 годин" },
+                  { icon: ShieldCheck, label: "Свіжість", sub: "100% гарантія" },
+                  { icon: Clock, label: "Цілодобово", sub: "у будь-який час" },
                 ].map((item) => (
                   <div key={item.label} className="text-center p-3 rounded-xl bg-stone-50 border border-stone-100">
                     <item.icon className="w-5 h-5 text-rose-400 mx-auto mb-1.5" />
@@ -300,7 +300,7 @@ export default function ProductDetail() {
                 <div className="mt-6 p-4 rounded-xl bg-green-50 border border-green-100">
                   <h4 className="text-sm font-medium text-green-800 flex items-center gap-2">
                     <Flower2 className="w-4 h-4" />
-                    Care Tips
+                    Догляд за квітами
                   </h4>
                   <p className="text-xs text-green-700 mt-1.5 leading-relaxed">{data.careTips}</p>
                 </div>
@@ -311,7 +311,7 @@ export default function ProductDetail() {
           {/* Reviews Section */}
           <div className="mt-20">
             <h2 className="text-2xl sm:text-3xl font-light text-stone-900 font-serif tracking-tight mb-8">
-              Customer <span className="text-rose-400 italic">Reviews</span>
+              Відгуки <span className="text-rose-400 italic">клієнтів</span>
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
               {reviews.map((review) => (
@@ -336,7 +336,7 @@ export default function ProductDetail() {
           {/* Related Products */}
           <div className="mt-20">
             <h2 className="text-2xl sm:text-3xl font-light text-stone-900 font-serif tracking-tight mb-8">
-              You might also <span className="text-rose-400 italic">like</span>
+              Вам також <span className="text-rose-400 italic">сподобається</span>
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
               {["royal-velvet", "spring-symphony", "pearl-peony"].map((s) => {

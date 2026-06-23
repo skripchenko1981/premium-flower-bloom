@@ -24,30 +24,30 @@ import Navbar from "@/components/Navbar";
 const deliveryMethods = [
   {
     id: "standard",
-    name: "Standard Delivery",
-    desc: "Within 2–4 hours from order",
+    name: "Стандартна доставка",
+    desc: "Протягом 2–4 годин з моменту замовлення",
     price: 150,
     icon: Truck,
   },
   {
     id: "express",
-    name: "Express Delivery",
-    desc: "Within 60–90 minutes",
+    name: "Експрес доставка",
+    desc: "Протягом 60–90 хвилин",
     price: 300,
     icon: Clock,
   },
   {
     id: "pickup",
-    name: "Pickup",
-    desc: "From our store at Khreshchatyk 25",
+    name: "Самовивіз",
+    desc: "З нашого магазину на Хрещатику, 25",
     price: 0,
     icon: Store,
   },
 ];
 
 const paymentMethods = [
-  { id: "card", name: "Card Online", icon: CreditCard },
-  { id: "cash", name: "Cash on Delivery", icon: CreditCard },
+  { id: "card", name: "Картка онлайн", icon: CreditCard },
+  { id: "cash", name: "Готівка при отриманні", icon: CreditCard },
 ];
 
 export default function Checkout() {
@@ -97,21 +97,21 @@ export default function Checkout() {
               <Check className="w-10 h-10 text-green-500" />
             </motion.div>
             <h1 className="text-3xl sm:text-4xl font-light text-stone-900 font-serif">
-              Order <span className="text-rose-400 italic">Confirmed!</span>
+              Order <span className="text-rose-400 italic">Підтверджено!</span>
             </h1>
             <p className="text-stone-500 mt-3">
-              Thank you for your order! Our florist will contact you soon to confirm the details.
+              Дякуємо за замовлення! Наш флорист зв'яжеться з вами найближчим часом для підтвердження деталей.
             </p>
             <p className="text-sm text-stone-400 mt-1 mb-8">
               Order #FB-{Math.floor(Math.random() * 9000) + 1000}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button onClick={() => navigate("/catalog")} className="bg-rose-400 hover:bg-rose-500 text-white rounded-xl">
-                Continue Shopping
+                Продовжити покупки
                 <Flower2 className="ml-2 w-4 h-4" />
               </Button>
               <Button variant="outline" onClick={() => navigate("/account?tab=orders")} className="border-stone-200 rounded-xl">
-                View My Orders
+                Мої замовлення
               </Button>
             </div>
           </div>
@@ -126,7 +126,7 @@ export default function Checkout() {
       <section className="pt-24 sm:pt-32 pb-16">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-stone-400 hover:text-rose-500 text-sm mb-8 transition-colors">
-            <ArrowLeft className="w-4 h-4" /> Back to Cart
+            <ArrowLeft className="w-4 h-4" /> До кошика
           </button>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -134,7 +134,7 @@ export default function Checkout() {
             transition={{ duration: 0.5 }}
           >
             <h1 className="text-3xl sm:text-4xl font-light text-stone-900 font-serif tracking-tight">
-              Checkout
+              Оформлення замовлення
             </h1>
           </motion.div>
 
@@ -143,20 +143,20 @@ export default function Checkout() {
               <div className="lg:col-span-2 space-y-6">
                 {/* Recipient Info */}
                 <div className="bg-white rounded-2xl border border-stone-100 p-6 shadow-sm">
-                  <h3 className="text-lg font-medium text-stone-800 mb-4">Recipient</h3>
+                  <h3 className="text-lg font-medium text-stone-800 mb-4">Отримувач</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="text-xs text-stone-400 font-medium mb-1.5 block">Name *</label>
+                      <label className="text-xs text-stone-400 font-medium mb-1.5 block">Ім'я *</label>
                       <Input
                         required
                         value={formData.recipientName}
                         onChange={(e) => setFormData({ ...formData, recipientName: e.target.value })}
                         className="rounded-xl border-stone-200 h-11"
-                        placeholder="Name Surname"
+                        placeholder="Ім'я Прізвище"
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-stone-400 font-medium mb-1.5 block">Phone *</label>
+                      <label className="text-xs text-stone-400 font-medium mb-1.5 block">Телефон *</label>
                       <Input
                         required
                         value={formData.recipientPhone}
@@ -180,7 +180,7 @@ export default function Checkout() {
 
                 {/* Delivery */}
                 <div className="bg-white rounded-2xl border border-stone-100 p-6 shadow-sm">
-                  <h3 className="text-lg font-medium text-stone-800 mb-4">Delivery Method</h3>
+                  <h3 className="text-lg font-medium text-stone-800 mb-4">Спосіб доставки</h3>
                   <div className="space-y-3">
                     {deliveryMethods.map((method) => (
                       <label
@@ -212,7 +212,7 @@ export default function Checkout() {
                           "text-sm font-medium",
                           method.price === 0 ? "text-green-600" : "text-stone-600"
                         )}>
-                          {method.price === 0 ? "Free" : `₴${method.price}`}
+                          {                          method.price === 0 ? "Безкоштовно" : `₴${method.price}`}
                         </span>
                       </label>
                     ))}
@@ -221,18 +221,18 @@ export default function Checkout() {
                   {deliveryMethod !== "pickup" && (
                     <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="text-xs text-stone-400 font-medium mb-1.5 block">Delivery Address *</label>
+                        <label className="text-xs text-stone-400 font-medium mb-1.5 block">Адреса доставки *</label>
                         <Input
                           required
                           value={formData.deliveryAddress}
                           onChange={(e) => setFormData({ ...formData, deliveryAddress: e.target.value })}
                           className="rounded-xl border-stone-200 h-11"
-                          placeholder="Street, building, apartment"
+                          placeholder="Вулиця, будинок, квартира"
                         />
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <label className="text-xs text-stone-400 font-medium mb-1.5 block">Date</label>
+                          <label className="text-xs text-stone-400 font-medium mb-1.5 block">Дата</label>
                           <Input
                             type="date"
                             value={formData.deliveryDate}
@@ -241,7 +241,7 @@ export default function Checkout() {
                           />
                         </div>
                         <div>
-                          <label className="text-xs text-stone-400 font-medium mb-1.5 block">Time</label>
+                          <label className="text-xs text-stone-400 font-medium mb-1.5 block">Час</label>
                           <Input
                             type="time"
                             value={formData.deliveryTime}
@@ -256,7 +256,7 @@ export default function Checkout() {
 
                 {/* Payment */}
                 <div className="bg-white rounded-2xl border border-stone-100 p-6 shadow-sm">
-                  <h3 className="text-lg font-medium text-stone-800 mb-4">Payment Method</h3>
+                  <h3 className="text-lg font-medium text-stone-800 mb-4">Спосіб оплати</h3>
                   <div className="space-y-3">
                     {paymentMethods.map((method) => (
                       <label
@@ -288,11 +288,11 @@ export default function Checkout() {
 
                 {/* Notes */}
                 <div className="bg-white rounded-2xl border border-stone-100 p-6 shadow-sm">
-                  <h3 className="text-lg font-medium text-stone-800 mb-4">Additional Notes</h3>
+                  <h3 className="text-lg font-medium text-stone-800 mb-4">Додаткові примітки</h3>
                   <Textarea
                     value={formData.notes}
                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                    placeholder="Any special requests for the order..."
+                    placeholder="Особливі побажання до замовлення..."
                     className="rounded-xl border-stone-200 resize-none h-24"
                   />
                 </div>
@@ -301,7 +301,7 @@ export default function Checkout() {
               {/* Order Summary Sidebar */}
               <div>
                 <div className="bg-white rounded-2xl border border-stone-100 p-6 shadow-sm sticky top-24">
-                  <h3 className="text-lg font-medium text-stone-800 mb-5">Your Order</h3>
+                  <h3 className="text-lg font-medium text-stone-800 mb-5">Ваше замовлення</h3>
 
                   {/* Demo items */}
                   <div className="space-y-3 mb-5">
@@ -319,18 +319,18 @@ export default function Checkout() {
                   <hr className="border-stone-100 mb-4" />
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-stone-500">Subtotal</span>
+                      <span className="text-stone-500">Сума</span>
                       <span className="text-stone-700">₴{subtotal}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-stone-500">Delivery</span>
+                      <span className="text-stone-500">Доставка</span>
                       <span className="text-stone-700">
                         {selectedDelivery.price === 0 ? "Free" : `₴${selectedDelivery.price}`}
                       </span>
                     </div>
                     <hr className="border-stone-100" />
                     <div className="flex justify-between text-base font-medium">
-                      <span className="text-stone-800">Total</span>
+                      <span className="text-stone-800">Разом</span>
                       <span className="text-stone-900">₴{total}</span>
                     </div>
                   </div>
@@ -341,7 +341,7 @@ export default function Checkout() {
                     disabled={isSubmitting}
                     className="w-full mt-6 bg-stone-800 hover:bg-rose-400 text-white rounded-xl py-6 text-base font-normal transition-all duration-300"
                   >
-                    {isSubmitting ? "Processing..." : `Pay ₴${total}`}
+                    {isSubmitting ? "Обробка..." : `Оплатити ₴${total}`}
                     {!isSubmitting && <Check className="ml-2 w-5 h-5" />}
                   </Button>
 

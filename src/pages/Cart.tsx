@@ -23,19 +23,15 @@ import {
 import { cn } from "@/lib/utils";
 import Navbar from "@/components/Navbar";
 
-const demoCartItems = [
-  {
-    _id: "c1",
+const demoCartItems = [  { _id: "c1",
     productId: "1",
-    productName: "Pink Dream",
+    productName: "Рожева мрія",
     productImage: "https://images.unsplash.com/photo-1591886960571-74d43a9d4166?w=400&q=80",
     price: 1299,
     quantity: 1,
     size: "M",
     withCard: false,
-  },
-  {
-    _id: "c2",
+  },  { _id: "c2",
     productId: "2",
     productName: "Royal Velvet",
     productImage: "https://images.unsplash.com/photo-1548586196-aa5823b77379?w=400&q=80",
@@ -85,10 +81,10 @@ export default function Cart() {
         setPromoDiscount(15);
         setPromoApplied(true);
       } else {
-        setPromoError("Invalid promocode");
+        setPromoError("Невірний промокод");
       }
     } catch {
-      setPromoError("Invalid promocode");
+      setPromoError("Невірний промокод");
     }
     setPromoLoading(false);
   };
@@ -115,7 +111,7 @@ export default function Cart() {
             transition={{ duration: 0.5 }}
           >
             <h1 className="text-3xl sm:text-4xl font-light text-stone-900 font-serif tracking-tight">
-              Your <span className="text-rose-400 italic">Cart</span>
+              Ваш <span className="text-rose-400 italic">Кошик</span>
             </h1>
           </motion.div>
 
@@ -126,10 +122,10 @@ export default function Cart() {
               className="text-center py-20"
             >
               <ShoppingCart className="w-16 h-16 text-stone-300 mx-auto mb-4" />
-              <h2 className="text-xl font-light text-stone-800 font-serif">Your cart is empty</h2>
-              <p className="text-stone-400 mt-1 mb-6">Add beautiful bouquets to get started</p>
+              <h2 className="text-xl font-light text-stone-800 font-serif">Ваш кошик порожній</h2>
+              <p className="text-stone-400 mt-1 mb-6">Додайте чудові букети, щоб розпочати</p>
               <Button onClick={() => navigate("/catalog")} className="bg-rose-400 hover:bg-rose-500 text-white rounded-xl">
-                Browse Catalog
+                Переглянути каталог
                 <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
             </motion.div>
@@ -157,11 +153,11 @@ export default function Cart() {
                         </h3>
                         <div className="flex items-center gap-2 mt-1 text-xs text-stone-400">
                           <span className="bg-stone-50 px-2 py-0.5 rounded-full border border-stone-100">
-                            Size: {item.size}
+                            Розмір: {item.size}
                           </span>
                           {item.withCard && (
                             <span className="bg-rose-50 text-rose-500 px-2 py-0.5 rounded-full border border-rose-100 flex items-center gap-1">
-                              <Gift className="w-3 h-3" /> Card
+                              <Gift className="w-3 h-3" /> Листівка
                             </span>
                           )}
                         </div>
@@ -200,33 +196,33 @@ export default function Cart() {
 
                 <Link to="/catalog" className="inline-flex items-center gap-2 text-sm text-stone-400 hover:text-rose-500 transition-colors mt-4">
                   <ArrowLeft className="w-4 h-4" />
-                  Continue Shopping
+                  Продовжити покупки
                 </Link>
               </div>
 
               {/* Summary */}
               <div>
                 <div className="bg-white rounded-2xl border border-stone-100 p-6 shadow-sm sticky top-24">
-                  <h3 className="text-lg font-medium text-stone-800 mb-5">Order Summary</h3>
+                  <h3 className="text-lg font-medium text-stone-800 mb-5">Деталі замовлення</h3>
 
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-stone-500">Subtotal ({items.length} items)</span>
+                      <span className="text-stone-500">Сума ({items.length} товарів)</span>
                       <span className="text-stone-700 font-medium">₴{subtotal}</span>
                     </div>
                     {discount > 0 && (
                       <div className="flex justify-between text-green-600">
-                        <span>Discount ({promoDiscount}%)</span>
+                        <span>Знижка ({promoDiscount}%)</span>
                         <span>-₴{discount}</span>
                       </div>
                     )}
                     <div className="flex justify-between">
                       <span className="text-stone-500 flex items-center gap-1.5">
-                        <Truck className="w-3.5 h-3.5" /> Delivery
+                        <Truck className="w-3.5 h-3.5" /> Доставка
                       </span>
                       <span className="text-stone-700 font-medium">
                         {shippingCost === 0 ? (
-                          <span className="text-green-600">Free</span>
+                          <span className="text-green-600">Безкоштовно</span>
                         ) : (
                           `₴${shippingCost}`
                         )}
@@ -234,12 +230,12 @@ export default function Cart() {
                     </div>
                     {subtotal < 2000 && shippingCost > 0 && (
                       <p className="text-[10px] text-stone-400">
-                        Free delivery for orders over ₴2,000
+                        Безкоштовна доставка для замовлень від ₴2 000
                       </p>
                     )}
                     <hr className="border-stone-100" />
                     <div className="flex justify-between text-base font-medium">
-                      <span className="text-stone-800">Total</span>
+                      <span className="text-stone-800">Разом</span>
                       <span className="text-stone-900">₴{total}</span>
                     </div>
                   </div>
@@ -253,7 +249,7 @@ export default function Cart() {
                           <Input
                             value={promoCode}
                             onChange={(e) => { setPromoCode(e.target.value); setPromoError(""); }}
-                            placeholder="Promocode"
+                            placeholder="Промокод"
                             className="pl-9 h-10 text-sm rounded-xl border-stone-200"
                           />
                         </div>
@@ -263,7 +259,7 @@ export default function Cart() {
                           disabled={!promoCode.trim() || promoLoading}
                           className="border-stone-200 text-stone-600 hover:text-rose-500 hover:border-rose-200 rounded-xl h-10"
                         >
-                          {promoLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Apply"}
+                          {promoLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Застосувати"}
                         </Button>
                       </div>
                     ) : (
@@ -286,7 +282,7 @@ export default function Cart() {
                     )}
                     {!promoApplied && !promoError && (
                       <p className="text-[10px] text-stone-400 mt-1.5">
-                        Try: FLOWER10 or LOVE15
+                        Спробуйте: FLOWER10 або LOVE15
                       </p>
                     )}
                   </div>
@@ -296,13 +292,13 @@ export default function Cart() {
                     size="lg"
                     className="w-full mt-6 bg-stone-800 hover:bg-rose-400 text-white rounded-xl py-6 text-base font-normal transition-all duration-300"
                   >
-                    Proceed to Checkout
+                    Оформити замовлення
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
 
                   <div className="mt-4 flex items-center gap-2 justify-center text-xs text-stone-400">
                     <Package className="w-3.5 h-3.5" />
-                    Secure packaging & guaranteed freshness
+                    Надійне пакування та гарантія свіжості
                   </div>
                 </div>
               </div>

@@ -20,24 +20,24 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
 const navLinks = [
-  { href: "/catalog", label: "Catalog" },
+  { href: "/catalog", label: "Каталог" },
   {
     href: "#",
-    label: "Shop",
+    label: "Квіти",
     children: [
-      { href: "/catalog?category=roses", label: "Roses" },
-      { href: "/catalog?category=tulips", label: "Tulips" },
-      { href: "/catalog?category=peonies", label: "Peonies" },
-      { href: "/catalog?category=orchids", label: "Orchids" },
-      { href: "/catalog?category=wedding", label: "Wedding" },
-      { href: "/catalog?category=author", label: "Author's" },
-      { href: "/catalog?category=plants", label: "Plants" },
-      { href: "/catalog?category=gifts", label: "Gift Sets" },
+      { href: "/catalog?category=roses", label: "Троянди" },
+      { href: "/catalog?category=tulips", label: "Тюльпани" },
+      { href: "/catalog?category=peonies", label: "Півонії" },
+      { href: "/catalog?category=orchids", label: "Орхідеї" },
+      { href: "/catalog?category=wedding", label: "Весілля" },
+      { href: "/catalog?category=author", label: "Авторські" },
+      { href: "/catalog?category=plants", label: "Рослини" },
+      { href: "/catalog?category=gifts", label: "Подарунки" },
     ],
   },
-  { href: "/delivery", label: "Delivery & Payment" },
-  { href: "/about", label: "About Us" },
-  { href: "/contacts", label: "Contacts" },
+  { href: "/delivery", label: "Доставка та оплата" },
+  { href: "/about", label: "Про нас" },
+  { href: "/contacts", label: "Контакти" },
 ];
 
 export default function Navbar() {
@@ -217,19 +217,19 @@ export default function Navbar() {
                         to="/account"
                         className="flex items-center gap-2 px-4 py-2.5 text-sm text-stone-600 hover:text-rose-500 hover:bg-rose-50"
                       >
-                        <User className="w-4 h-4" /> Profile
+                        <User className="w-4 h-4" /> Профіль
                       </Link>
                       <Link
                         to="/account?tab=orders"
                         className="flex items-center gap-2 px-4 py-2.5 text-sm text-stone-600 hover:text-rose-500 hover:bg-rose-50"
                       >
-                        <Package className="w-4 h-4" /> Orders
+                        <Package className="w-4 h-4" /> Замовлення
                       </Link>
                       <button
                         onClick={handleSignOut}
                         className="flex items-center gap-2 px-4 py-2.5 text-sm text-stone-600 hover:text-red-500 hover:bg-red-50 w-full text-left"
                       >
-                        <LogOut className="w-4 h-4" /> Sign Out
+                        <LogOut className="w-4 h-4" /> Вийти
                       </button>
                     </div>
                   </div>
@@ -238,10 +238,7 @@ export default function Navbar() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="border-rose-200 text-rose-500 hover:bg-rose-50 hover:text-rose-600 transition-all"
-                    >
-                      Sign In
-                    </Button>
+                      className="border-rose-200 text-rose-500 hover:bg-rose-50 hover:text-rose-600 transition-all"">Увійти</Button>
                   </Link>
                 ))}
 
@@ -318,7 +315,7 @@ export default function Navbar() {
                   to="/auth"
                   className="block px-3 py-3 rounded-lg text-base font-medium text-rose-500 hover:bg-rose-50"
                 >
-                  Sign In / Sign Up
+                  Увійти / Зареєструватися
                 </Link>
               )}
               {isAuthenticated && (
@@ -327,13 +324,13 @@ export default function Navbar() {
                     to="/account"
                     className="flex items-center gap-2 px-3 py-3 rounded-lg text-base font-medium text-stone-700 hover:text-rose-500 hover:bg-rose-50"
                   >
-                    <User className="w-4 h-4" /> Profile
+                    <User className="w-4 h-4" /> Профіль
                   </Link>
                   <button
                     onClick={handleSignOut}
                     className="flex items-center gap-2 px-3 py-3 rounded-lg text-base font-medium text-stone-700 hover:text-red-500 hover:bg-red-50 w-full text-left"
                   >
-                    <LogOut className="w-4 h-4" /> Sign Out
+                    <LogOut className="w-4 h-4" /> Вийти
                   </button>
                 </>
               )}

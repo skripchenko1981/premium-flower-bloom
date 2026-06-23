@@ -26,24 +26,24 @@ const images = {
 };
 
 const florists = [
-  { name: "Olena Ivanova", role: "Head Florist", experience: "12 years", image: images.florist1, bio: "Graduated from the Kyiv School of Floristry. Participant and winner of international floristry competitions. Specializes in wedding arrangements." },
-  { name: "Maria Kovalenko", role: "Senior Florist", experience: "8 years", image: images.florist2, bio: "Expert in Dutch techniques of bouquet arrangement. Creates author's compositions that become the highlight of any event." },
-  { name: "Kateryna Shevchenko", role: "Florist-Decorator", experience: "6 years", image: images.florist3, bio: "Specialist in event and wedding decoration. Transforms spaces into flower fairy tales." },
+  { name: "Олена Іванова", role: "Головний флорист", experience: "12 років", image: images.florist1, bio: "Закінчила Київську школу флористики. Учасниця та переможниця міжнародних конкурсів флористики. Спеціалізується на весільних композиціях." },
+  { name: "Марія Коваленко", role: "Старший флорист", experience: "8 років", image: images.florist2, bio: "Експерт з голландських технік аранжування букетів. Створює авторські композиції, які стають родзинкою будь-якої події." },
+  { name: "Катерина Шевченко", role: "Флорист-декоратор", experience: "6 років", image: images.florist3, bio: "Спеціаліст з оформлення заходів та весіль. Перетворює простори на квіткові казки." },
 ];
 
 const certificates = [
-  { title: "European Floristry Certificate", org: "EFDE (European Floral Design Education)", year: "2022" },
-  { title: "Diploma of Professional Florist", org: "Kyiv School of Floristry & Design", year: "2018" },
-  { title: "Winner — 'Flower Paradise' Competition", org: "Ukrainian Florists Association", year: "2023" },
-  { title: "Quality Service Award", org: "Ukrainian E-commerce Award", year: "2024" },
+  { title: "Європейський сертифікат флориста", org: "EFDE (European Floral Design Education)", year: "2022" },
+  { title: "Диплом професійного флориста", org: "Київська школа флористики та дизайну", year: "2018" },
+  { title: "Переможець конкурсу 'Квітковий рай'", org: "Асоціація флористів України", year: "2023" },
+  { title: "Нагорода за якість сервісу", org: "Ukrainian E-commerce Award", year: "2024" },
 ];
 
 const milestones = [
-  { year: "2017", title: "First Studio", desc: "Started with a small studio of 20 m² and a huge love for flowers." },
-  { year: "2019", title: "First 1000 Orders", desc: "Reached 1,000 fulfilled orders and hired the first 3 florists." },
-  { year: "2021", title: "Own Delivery", desc: "Launched our own delivery service to ensure freshness at every stage." },
-  { year: "2023", title: "Rebranding", desc: "Became 'Flower Bloom' — a premium brand known across the city." },
-  { year: "2025", title: "Today", desc: "Over 15,000 happy clients, 300+ unique designs, and we keep growing." },
+  { year: "2017", title: "Перша студія", desc: "Почали з маленької студії 20 м² і величезної любові до квітів." },
+  { year: "2019", title: "Перші 1000 замовлень", desc: "Досягли 1 000 виконаних замовлень і найняли перших 3 флористів." },
+  { year: "2021", title: "Власна доставка", desc: "Запустили власну службу доставки для забезпечення свіжості на кожному етапі." },
+  { year: "2023", title: "Ребрендинг", desc: "Стали 'Flower Bloom' — преміум-брендом, відомим у всьому місті." },
+  { year: "2025", title: "Сьогодні", desc: "Понад 15 000 задоволених клієнтів, 300+ унікальних дизайнів, і ми продовжуємо рости." },
 ];
 
 function FadeInSection({ children, className, delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
@@ -67,13 +67,13 @@ export default function About() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <Badge className="mb-4 bg-rose-100 text-rose-600 hover:bg-rose-100 border-none">
               <Flower2 className="w-3.5 h-3.5 mr-2" />
-              Our Story
+              Наша історія
             </Badge>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-light text-stone-900 font-serif tracking-tight">
-              About <span className="text-rose-400 italic">Flower Bloom</span>
+              Про <span className="text-rose-400 italic">Flower Bloom</span>
             </h1>
             <p className="mt-3 text-stone-500 max-w-xl mx-auto">
-              More than just a flower shop — a story of love, creativity, and the desire to make the world more beautiful.
+              Більше, ніж просто квітковий магазин — історія любові, творчості та бажання зробити світ красивішим.
             </p>
           </motion.div>
         </div>
@@ -86,30 +86,30 @@ export default function About() {
             <FadeInSection>
               <img
                 src={images.workshop}
-                alt="Our workshop"
+                alt="Наша майстерня"
                 className="rounded-3xl shadow-lg w-full aspect-[4/3] object-cover"
               />
             </FadeInSection>
             <FadeInSection delay={0.2}>
               <h2 className="text-3xl sm:text-4xl font-light text-stone-900 font-serif tracking-tight">
-                How it all <span className="text-rose-400 italic">began</span>
+                Як усе <span className="text-rose-400 italic">починалося</span>
               </h2>
               <div className="mt-6 space-y-4 text-stone-500 leading-relaxed">
                 <p>
-                  Flower Bloom was born in 2017 from a simple but powerful idea: to make fresh, beautiful flowers accessible to everyone. Our founder, Olena, started with 20 square meters and a relentless passion for floristry.
+                  Flower Bloom народився у 2017 році з простої, але потужної ідеї: зробити свіжі, красиві квіти доступними для кожного. Наша засновниця Олена почала з 20 квадратних метрів і невгамовної пристрасті до флористики.
                 </p>
                 <p>
-                  Over the years, we've grown into a team of 15 talented florists, designers, and logistics specialists. Each bouquet we create is a small work of art — handcrafted with love, attention to every petal, and the highest quality standards.
+                  За ці роки ми виросли в команду з 15 талановитих флористів, дизайнерів і фахівців з логістики. Кожен букет, який ми створюємо, — це маленький витвір мистецтва, створений вручну з любов'ю, увагою до кожної пелюстки та найвищими стандартами якості.
                 </p>
                 <p>
-                  Today, Flower Bloom is one of the leading flower shops in Kyiv, delivering joy to thousands of homes every month. But what hasn't changed is our commitment to freshness, creativity, and the personal touch that makes every order special.
+                  Сьогодні Flower Bloom — один із провідних квіткових магазинів Києва, який щомісяця дарує радість тисячам домівок. Але що не змінилося — це наша відданість свіжості, творчості та особистому підходу, який робить кожне замовлення особливим.
                 </p>
               </div>
               <div className="mt-8 flex gap-8">
                 {[
-                  { icon: Heart, label: "15,000+", sub: "Happy clients" },
-                  { icon: Flower2, label: "300+", sub: "Bouquet designs" },
-                  { icon: Award, label: "15+", sub: "Awards won" },
+                  { icon: Heart, label: "15 000+", sub: "Задоволених клієнтів" },
+                  { icon: Flower2, label: "300+", sub: "Дизайнів букетів" },
+                  { icon: Award, label: "15+", sub: "Отриманих нагород" },
                 ].map((stat) => (
                   <div key={stat.label}>
                     <div className="flex items-center gap-1.5 text-rose-400 mb-1">
@@ -130,7 +130,7 @@ export default function About() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInSection className="text-center mb-14">
             <h2 className="text-3xl sm:text-4xl font-light text-stone-900 font-serif tracking-tight">
-              Our <span className="text-rose-400 italic">Journey</span>
+              Наш <span className="text-rose-400 italic">Шлях</span>
             </h2>
           </FadeInSection>
 
@@ -166,16 +166,15 @@ export default function About() {
       {/* Florists */}
       <section className="py-16 sm:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <FadeInSection className="text-center mb-14">
-            <Badge className="mb-4 bg-rose-100 text-rose-600 hover:bg-rose-100 border-none mx-auto">
+          <FadeInSection className="text-center mb-14">              <Badge className="mb-4 bg-rose-100 text-rose-600 hover:bg-rose-100 border-none mx-auto">
               <Users className="w-3.5 h-3.5 mr-2" />
-              Team
+              Команда
             </Badge>
             <h2 className="text-3xl sm:text-4xl font-light text-stone-900 font-serif tracking-tight">
-              Our <span className="text-rose-400 italic">Florists</span>
+              Наші <span className="text-rose-400 italic">Флористи</span>
             </h2>
             <p className="mt-3 text-stone-500 max-w-lg mx-auto">
-              Talented professionals who put their heart into every bouquet.
+              Талановиті професіонали, які вкладають душу в кожен букет.
             </p>
           </FadeInSection>
 
@@ -195,7 +194,7 @@ export default function About() {
                     <p className="text-sm text-rose-400 font-medium mb-3">{florist.role}</p>
                     <p className="text-xs text-stone-400 flex items-center gap-1.5 mb-3">
                       <GraduationCap className="w-3.5 h-3.5" />
-                      Experience: {florist.experience}
+                      Досвід: {florist.experience}
                     </p>
                     <p className="text-sm text-stone-500 leading-relaxed">{florist.bio}</p>
                   </div>
@@ -211,7 +210,7 @@ export default function About() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInSection className="text-center mb-14">
             <h2 className="text-3xl sm:text-4xl font-light text-stone-900 font-serif tracking-tight">
-              Certificates & <span className="text-rose-400 italic">Awards</span>
+              Сертифікати та <span className="text-rose-400 italic">Нагороди</span>
             </h2>
           </FadeInSection>
 
@@ -237,22 +236,22 @@ export default function About() {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <FadeInSection>
             <h2 className="text-3xl sm:text-4xl font-light text-stone-900 font-serif tracking-tight">
-              Ready to create{" "}
-              <span className="text-rose-400 italic">something beautiful</span>?
+              Готові створити{" "}
+              <span className="text-rose-400 italic">щось прекрасне</span>?
             </h2>
             <p className="mt-3 text-stone-500">
-              Choose a bouquet from our catalog or contact us for a custom arrangement.
+              Оберіть букет з нашого каталогу або зв'яжіться з нами для індивідуального замовлення.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/catalog">
                 <Button className="bg-rose-400 hover:bg-rose-500 text-white rounded-xl px-8 py-6 text-base font-normal shadow-lg shadow-rose-200/50">
-                  Browse Catalog
+                  Переглянути каталог
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
               <Link to="/contacts">
                 <Button variant="outline" className="border-stone-200 hover:border-rose-200 rounded-xl px-8 py-6 text-base font-normal text-stone-600">
-                  Contact Us
+                  Зв'язатися з нами
                 </Button>
               </Link>
             </div>
