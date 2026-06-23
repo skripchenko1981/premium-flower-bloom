@@ -1,176 +1,105 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+"""Orders API endpoints."""
+
+import uuid
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Optional
+
 from app.core.database import get_db
-from app.core.security import oauth2_scheme, get_current_user_id
-from app.repositories.repositories import (
-    OrderRepository, UserRepository, ProductRepository, Product,
-)
-from app.schemas.schemas import (
-    OrderCreate, OrderResponse, OrderListResponse, OrderStatusUpdate,
-)
-from app.models.models import OrderStatus, UserRole
+from app.repositories.order import OrderRepository
+from app.schemas.order import OrderCreate, OrderOut, OrderListResponse, OrderStatusUpdate
+from app.api.deps import get_current_user, get_current_admin_user, get_current_user_optional
+from app.models.user import User
 
 router = APIRouter(prefix="/orders", tags=["orders"])
 
 
-async def require_admin(token: str, db: AsyncSession) -> int:
-    user_id = await get_current_user_id(token)
-    repo = UserRepository(db)
-    user = await repo.get(user_id)
-    if not user or user.role != UserRole.ADMIN:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
-    return user_id
-
-
-@router.post("/", response_model=OrderResponse, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=OrderOut, status_code=status.HTTP_201_CREATED)
 async def create_order(
-    data: OrderCreate,
-    token: Optional[str] = Depends(oauth2_scheme),
+    req: OrderCreate,
+    current_user: User | None = Depends(get_current_user_optional),
     db: AsyncSession = Depends(get_db),
 ):
-    user_id = None
-    if token:
-        try:
-            user_id = await get_current_user_id(token)
-        except Exception:
-            pass
+    repo = OrderRepository(db)
 
-    order_repo = OrderRepository(db)
-    product_repo = ProductRepository(db)
+    subtotal = sum(item.price * item.quantity for item in req.items)
+    shipping_cost = 0
+    if req.shipping_method == "express":
+        shipping_cost = 300
+    elif req.shipping_method == "standard":
+        shipping_cost = 150 if subtotal < 2000 else 0
 
-    # Calculate total and validate products
-    total_amount = 0.0
-    items_data = []
-    for item in data.items:
-        product = await product_repo.get(item.product_id)
-        if not product or not product.is_active:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Product with id {item.product_id} not found",
-            )
-        if product.stock < item.quantity:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Insufficient stock for {product.name}",
-            )
-        total_amount += product.price * item.quantity
-        items_data.append({
-            "product_id": product.id,
-            "quantity": item.quantity,
-            "price": product.price,
-        })
+    total = subtotal + shipping_cost
 
-    order = await order_repo.create(
-        user_id=user_id,
-        total_amount=total_amount,
-        delivery_address=data.delivery_address,
-        delivery_city=data.delivery_city,
-        delivery_phone=data.delivery_phone,
-        delivery_notes=data.delivery_notes,
-        payment_method=data.payment_method,
-        status=OrderStatus.PENDING,
+    order = await repo.create(
+        user_id=current_user.id if current_user else None,
+        items_data=[item.model_dump() for item in req.items],
+        subtotal=subtotal,
+        shipping_method=req.shipping_method,
+        shipping_cost=shipping_cost,
+        total_amount=total,
+        payment_method=req.payment_method,
+        recipient_name=req.recipient_name,
+        recipient_phone=req.delivery_phone,
+        recipient_email=req.recipient_email,
+        delivery_address=req.delivery_address,
+        delivery_city=req.delivery_city,
+        delivery_date=req.delivery_date,
+        delivery_time=req.delivery_time,
+        delivery_notes=req.delivery_notes,
+        card_message=req.card_message,
+        notes=req.notes,
     )
-
-    # Create order items
-    from app.models.models import OrderItem
-    for item_data in items_data:
-        order_item = OrderItem(order_id=order.id, **item_data)
-        db.add(order_item)
-
-    await db.flush()
-
-    # Update stock
-    for item in data.items:
-        product = await product_repo.get(item.product_id)
-        if product:
-            await product_repo.update(product.id, stock=product.stock - item.quantity)
-
-    return await order_repo.get_with_items(order.id)
+    return OrderOut(**order.to_dict())
 
 
-@router.get("/", response_model=OrderListResponse)
-async def list_orders(
+@router.get("", response_model=OrderListResponse)
+async def get_orders(
     page: int = Query(1, ge=1),
     size: int = Query(10, ge=1, le=100),
-    status_filter: Optional[str] = None,
-    token: str = Depends(oauth2_scheme),
+    status_filter: str | None = Query(None, alias="status_filter"),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    user_id = await get_current_user_id(token)
-    repo = UserRepository(db)
-    user = await repo.get(user_id)
-    order_repo = OrderRepository(db)
-
-    if user and user.role == UserRole.ADMIN:
-        filters = {}
-        if status_filter:
-            filters["status"] = status_filter
-        orders, total = await order_repo.get_all(
-            skip=(page - 1) * size,
-            limit=size,
-            filters=filters,
-            order_by="created_at",
-            descending=True,
-        )
-    else:
-        orders, total = await order_repo.get_by_user(
-            user_id,
-            skip=(page - 1) * size,
-            limit=size,
-        )
-
-    return OrderListResponse(
-        orders=orders,
-        total=total,
-        page=page,
-        size=size,
-        total_pages=(total + size - 1) // size,
-    )
-
-
-@router.get("/{id}", response_model=OrderResponse)
-async def get_order(
-    id: int,
-    token: str = Depends(oauth2_scheme),
-    db: AsyncSession = Depends(get_db),
-):
-    user_id = await get_current_user_id(token)
+    """Get current user's orders (or all orders for admin)."""
     repo = OrderRepository(db)
-    order = await repo.get_with_items(id)
 
+    if current_user.role == "admin":
+        orders, total = await repo.get_all(page=page, size=size, status_filter=status_filter)
+    else:
+        orders, total = await repo.get_by_user(current_user.id, page=page, size=size)
+
+    items = [OrderOut(**o.to_dict()) for o in orders]
+    return OrderListResponse(orders=items, total=total, page=page, size=size)
+
+
+@router.get("/{order_id}", response_model=OrderOut)
+async def get_order(
+    order_id: str,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    repo = OrderRepository(db)
+    order = await repo.get_by_id(uuid.UUID(order_id))
     if not order:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
 
-    # Check access
-    user_repo = UserRepository(db)
-    user = await user_repo.get(user_id)
-    if order.user_id != user_id and (not user or user.role != UserRole.ADMIN):
+    # Check ownership or admin
+    if order.user_id != current_user.id and current_user.role != "admin":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Access denied")
 
-    return order
+    return OrderOut(**order.to_dict())
 
 
-@router.put("/{id}/status", response_model=OrderResponse)
+@router.put("/{order_id}/status", response_model=OrderOut)
 async def update_order_status(
-    id: int,
-    data: OrderStatusUpdate,
-    token: str = Depends(oauth2_scheme),
+    order_id: str,
+    req: OrderStatusUpdate,
+    admin: ... = Depends(get_current_admin_user),
     db: AsyncSession = Depends(get_db),
 ):
-    await require_admin(token, db)
-    order_repo = OrderRepository(db)
-
-    try:
-        new_status = OrderStatus(data.status)
-    except ValueError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid status. Allowed: {[s.value for s in OrderStatus]}",
-        )
-
-    order = await order_repo.update(id, status=new_status)
+    repo = OrderRepository(db)
+    order = await repo.update_status(uuid.UUID(order_id), req.status)
     if not order:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Order not found")
-
-    return await order_repo.get_with_items(id)
+    return OrderOut(**order.to_dict())

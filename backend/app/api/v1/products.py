@@ -1,215 +1,179 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query, UploadFile, File
-from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Optional
-from slugify import slugify
-from app.core.database import get_db
-from app.core.config import settings
-from app.core.security import oauth2_scheme, get_current_user_id
-from app.repositories.repositories import (
-    ProductRepository, UserRepository, ProductImage,
-)
-from app.schemas.schemas import (
-    ProductCreate, ProductUpdate, ProductResponse, ProductListResponse,
-)
-from app.models.models import UserRole
+"""Products API endpoints."""
+
+import uuid
 import os
 import shutil
-import uuid
+
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status, Query
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.core.database import get_db
+from app.core.config import settings
+from app.repositories.product import ProductRepository
+from app.schemas.product import ProductCreate, ProductUpdate, ProductOut, ProductListResponse
+from app.api.deps import get_current_admin_user, get_current_user_optional
+from app.utils.slug import slugify
 
 router = APIRouter(prefix="/products", tags=["products"])
 
 
-async def require_admin(token: str, db: AsyncSession) -> int:
-    user_id = await get_current_user_id(token)
-    repo = UserRepository(db)
-    user = await repo.get(user_id)
-    if not user or user.role != UserRole.ADMIN:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
-    return user_id
+def _product_to_out(product) -> ProductOut:
+    """Convert a product ORM object to its output schema, normalising image format."""
+    d = product.to_dict()
+    if d.get("images") and isinstance(d["images"], list):
+        d["images"] = [img["url"] if isinstance(img, dict) else img for img in d["images"]]
+    return ProductOut(**d)
 
 
-@router.get("/", response_model=ProductListResponse)
-async def list_products(
+@router.get("", response_model=ProductListResponse)
+async def get_products(
     page: int = Query(1, ge=1),
     size: int = Query(12, ge=1, le=100),
-    search: Optional[str] = None,
-    category_id: Optional[int] = None,
-    min_price: Optional[float] = None,
-    max_price: Optional[float] = None,
-    featured: Optional[bool] = None,
-    sort_by: str = "created_at",
-    sort_desc: bool = True,
+    search: str | None = None,
+    category_id: str | None = None,
+    category_slug: str | None = Query(None, alias="category"),
+    min_price: float | None = Query(None, alias="min_price"),
+    max_price: float | None = Query(None, alias="max_price"),
+    sort_by: str | None = Query(None, alias="sort_by"),
+    sort_desc: bool = Query(False, alias="sort_desc"),
     db: AsyncSession = Depends(get_db),
 ):
     repo = ProductRepository(db)
-    skip = (page - 1) * size
-
-    if search or category_id or min_price or max_price or featured is not None:
-        products, total = await repo.search(
-            query=search or "",
-            category_id=category_id,
-            min_price=min_price,
-            max_price=max_price,
-            is_featured=featured,
-            sort_by=sort_by,
-            sort_desc=sort_desc,
-            skip=skip,
-            limit=size,
-        )
-    else:
-        products, total = await repo.get_all(
-            skip=skip,
-            limit=size,
-            filters={"is_active": True},
-            order_by=sort_by,
-            descending=sort_desc,
-        )
-
-    return ProductListResponse(
-        products=products,
-        total=total,
+    products, total = await repo.get_all(
         page=page,
         size=size,
-        total_pages=(total + size - 1) // size,
+        search=search,
+        category_slug=category_slug,
+        category_id=category_id,
+        min_price=min_price,
+        max_price=max_price,
+        sort_by=sort_by,
+        sort_desc=sort_desc,
+        active_only=True,
     )
+    items = [_product_to_out(p) for p in products]
+    return ProductListResponse(products=items, total=total, page=page, size=size)
 
 
-@router.get("/featured", response_model=list[ProductResponse])
-async def featured_products(
+@router.get("/featured", response_model=list[ProductOut])
+async def get_featured_products(
     limit: int = Query(8, ge=1, le=20),
     db: AsyncSession = Depends(get_db),
 ):
     repo = ProductRepository(db)
-    return await repo.get_featured(limit)
+    products = await repo.get_featured(limit=limit)
+    return [_product_to_out(p) for p in products]
 
 
 @router.get("/category/{slug}", response_model=ProductListResponse)
-async def products_by_category(
+async def get_products_by_category(
     slug: str,
     page: int = Query(1, ge=1),
     size: int = Query(12, ge=1, le=100),
     db: AsyncSession = Depends(get_db),
 ):
     repo = ProductRepository(db)
-    skip = (page - 1) * size
-    products, total = await repo.get_by_category(slug, skip=skip, limit=size)
-
-    return ProductListResponse(
-        products=products,
-        total=total,
-        page=page,
-        size=size,
-        total_pages=(total + size - 1) // size,
-    )
+    products, total = await repo.get_by_category_slug(slug, page=page, size=size)
+    items = [_product_to_out(p) for p in products]
+    return ProductListResponse(products=items, total=total, page=page, size=size)
 
 
-@router.get("/{slug}", response_model=ProductResponse)
-async def get_product(slug: str, db: AsyncSession = Depends(get_db)):
+@router.get("/{slug_or_id}", response_model=ProductOut)
+async def get_product(slug_or_id: str, db: AsyncSession = Depends(get_db)):
     repo = ProductRepository(db)
-    product = await repo.get_by_slug(slug)
-    if not product or not product.is_active:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
-    return product
-
-
-@router.post("/", response_model=ProductResponse, status_code=status.HTTP_201_CREATED)
-async def create_product(
-    data: ProductCreate,
-    token: str = Depends(oauth2_scheme),
-    db: AsyncSession = Depends(get_db),
-):
-    await require_admin(token, db)
-    repo = ProductRepository(db)
-
-    base_slug = slugify(data.name)
-    slug = base_slug
-    counter = 1
-    while True:
-        existing = await repo.get_by_slug(slug)
-        if not existing:
-            break
-        slug = f"{base_slug}-{counter}"
-        counter += 1
-
-    return await repo.create(slug=slug, **data.model_dump())
-
-
-@router.put("/{id}", response_model=ProductResponse)
-async def update_product(
-    id: int,
-    data: ProductUpdate,
-    token: str = Depends(oauth2_scheme),
-    db: AsyncSession = Depends(get_db),
-):
-    await require_admin(token, db)
-    repo = ProductRepository(db)
-
-    update_data = data.model_dump(exclude_none=True)
-    if "name" in update_data:
-        update_data["slug"] = slugify(update_data["name"])
-
-    product = await repo.update(id, **update_data)
+    # Try by slug first, then by ID
+    product = await repo.get_by_slug(slug_or_id)
+    if not product:
+        try:
+            product = await repo.get_by_id(uuid.UUID(slug_or_id))
+        except ValueError:
+            pass
     if not product:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
-    return product
+    return _product_to_out(product)
 
 
-@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_product(
-    id: int,
-    token: str = Depends(oauth2_scheme),
+@router.post("", response_model=ProductOut, status_code=status.HTTP_201_CREATED)
+async def create_product(
+    req: ProductCreate,
+    admin: ... = Depends(get_current_admin_user),
     db: AsyncSession = Depends(get_db),
 ):
-    await require_admin(token, db)
     repo = ProductRepository(db)
-    deleted = await repo.delete(id)
+    product = await repo.create(
+        name=req.name,
+        slug=req.slug or slugify(req.name),
+        description=req.description,
+        price=req.price,
+        old_price=req.old_price,
+        category_id=uuid.UUID(req.category_id) if req.category_id else None,
+        sizes=[s.model_dump() for s in req.sizes] if req.sizes else None,
+        in_stock=req.in_stock,
+        stock=req.stock,
+        featured=req.featured,
+        popular=req.popular,
+        tags=req.tags,
+        care_tips=req.care_tips,
+    )
+    return _product_to_out(product)
+
+
+@router.put("/{product_id}", response_model=ProductOut)
+async def update_product(
+    product_id: str,
+    req: ProductUpdate,
+    admin: ... = Depends(get_current_admin_user),
+    db: AsyncSession = Depends(get_db),
+):
+    repo = ProductRepository(db)
+    kwargs = req.model_dump(exclude_none=True)
+    if "sizes" in kwargs and kwargs["sizes"] is not None:
+        kwargs["sizes"] = [s.model_dump() if hasattr(s, "model_dump") else s for s in kwargs["sizes"]]
+    if "category_id" in kwargs and kwargs["category_id"]:
+        kwargs["category_id"] = uuid.UUID(kwargs["category_id"])
+
+    product = await repo.update(uuid.UUID(product_id), **kwargs)
+    if not product:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
+    return _product_to_out(product)
+
+
+@router.delete("/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_product(
+    product_id: str,
+    admin: ... = Depends(get_current_admin_user),
+    db: AsyncSession = Depends(get_db),
+):
+    repo = ProductRepository(db)
+    deleted = await repo.delete(uuid.UUID(product_id))
     if not deleted:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
 
 
-@router.post("/{id}/images", status_code=status.HTTP_201_CREATED)
+@router.post("/{product_id}/images", status_code=status.HTTP_201_CREATED)
 async def upload_product_image(
-    id: int,
+    product_id: str,
     file: UploadFile = File(...),
-    token: str = Depends(oauth2_scheme),
+    admin: ... = Depends(get_current_admin_user),
     db: AsyncSession = Depends(get_db),
 ):
-    await require_admin(token, db)
     repo = ProductRepository(db)
-    product = await repo.get(id)
+    product = await repo.get_by_id(uuid.UUID(product_id))
     if not product:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
 
-    # Validate file
-    ext = os.path.splitext(file.filename or "")[1].lower()
-    if ext not in settings.ALLOWED_EXTENSIONS:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"File type {ext} not allowed. Allowed: {settings.ALLOWED_EXTENSIONS}",
-        )
-
     # Save file
-    os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
+    upload_dir = os.path.join(settings.UPLOAD_DIR, "products")
+    os.makedirs(upload_dir, exist_ok=True)
+
+    ext = os.path.splitext(file.filename or "image.jpg")[1] or ".jpg"
     filename = f"{uuid.uuid4().hex}{ext}"
-    filepath = os.path.join(settings.UPLOAD_DIR, filename)
+    filepath = os.path.join(upload_dir, filename)
 
-    with open(filepath, "wb") as f:
-        shutil.copyfileobj(file.file, f)
+    with open(filepath, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
 
-    image_url = f"/uploads/{filename}"
+    url = f"/uploads/products/{filename}"
+    img = await repo.add_image(product.id, url, sort_order=len(product.images))
 
-    # Check if this is the first image — make it primary
-    existing_images, _ = await repo.get_all(filters={"product_id": id})
-    is_primary = len(existing_images) == 0
-
-    image = ProductImage(
-        product_id=id,
-        url=image_url,
-        alt_text=file.filename,
-        sort_order=len(existing_images),
-        is_primary=is_primary,
-    )
-    db.add(image)
-    await db.flush()
-
-    return {"id": image.id, "url": image_url, "is_primary": is_primary}
+    return {"id": str(img.id), "url": url, "sort_order": img.sort_order}

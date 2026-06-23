@@ -1,51 +1,49 @@
+"""Contacts API endpoints."""
+
+import uuid
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.database import get_db
-from app.repositories.repositories import ContactRepository
-from app.schemas.schemas import ContactCreate, ContactResponse
-from app.core.security import oauth2_scheme, get_current_user_id
-from app.repositories.repositories import UserRepository
-from app.models.models import UserRole
+from app.repositories.contact import ContactRepository
+from app.schemas.contact import ContactCreate, ContactOut
+from app.api.deps import get_current_admin_user
 
 router = APIRouter(prefix="/contacts", tags=["contacts"])
 
 
-@router.post("/", response_model=ContactResponse, status_code=status.HTTP_201_CREATED)
-async def create_contact(data: ContactCreate, db: AsyncSession = Depends(get_db)):
+@router.post("", response_model=ContactOut, status_code=status.HTTP_201_CREATED)
+async def submit_contact(req: ContactCreate, db: AsyncSession = Depends(get_db)):
     repo = ContactRepository(db)
-    return await repo.create(**data.model_dump())
+    contact = await repo.create(
+        name=req.name,
+        email=req.email,
+        message=req.message,
+        phone=req.phone,
+        subject=req.subject,
+    )
+    return ContactOut(**contact.to_dict())
 
 
-@router.get("/", response_model=list[ContactResponse])
-async def list_contacts(
-    token: str = Depends(oauth2_scheme),
+@router.get("", response_model=list[ContactOut])
+async def get_contacts(
+    admin: ... = Depends(get_current_admin_user),
     db: AsyncSession = Depends(get_db),
 ):
-    user_id = await get_current_user_id(token)
-    user_repo = UserRepository(db)
-    user = await user_repo.get(user_id)
-    if not user or user.role != UserRole.ADMIN:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
-
     repo = ContactRepository(db)
-    items, _ = await repo.get_all(order_by="created_at", descending=True)
-    return items
+    contacts = await repo.get_all()
+    return [ContactOut(**c.to_dict()) for c in contacts]
 
 
-@router.put("/{id}/read")
-async def mark_read(
-    id: int,
-    token: str = Depends(oauth2_scheme),
+@router.put("/{contact_id}/read", response_model=ContactOut)
+async def mark_contact_read(
+    contact_id: str,
+    admin: ... = Depends(get_current_admin_user),
     db: AsyncSession = Depends(get_db),
 ):
-    user_id = await get_current_user_id(token)
-    user_repo = UserRepository(db)
-    user = await user_repo.get(user_id)
-    if not user or user.role != UserRole.ADMIN:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Admin access required")
-
     repo = ContactRepository(db)
-    contact = await repo.update(id, is_read=True)
+    contact = await repo.mark_read(uuid.UUID(contact_id))
     if not contact:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contact not found")
-    return contact
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Contact message not found")
+    return ContactOut(**contact.to_dict())
