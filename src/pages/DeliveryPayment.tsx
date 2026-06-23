@@ -1,7 +1,5 @@
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { useRef } from "react";
-import { useInView } from "framer-motion";
+import { useState, useRef } from "react";
+import { motion, useInView } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import {
   Truck,
@@ -14,6 +12,7 @@ import {
   Wallet,
   Banknote,
   Smartphone,
+  Store,
   HelpCircle,
   ChevronDown,
 } from "lucide-react";

@@ -29,13 +29,16 @@ export const getProducts = query({
     sortBy: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    let query = ctx.db.query("products");
+    let products;
 
     if (args.category) {
-      query = query.withIndex("by_category", (q) => q.eq("category", args.category));
+      const category = args.category;
+      products = await ctx.db.query("products")
+        .withIndex("by_category", (q) => q.eq("category", category))
+        .collect();
+    } else {
+      products = await ctx.db.query("products").collect();
     }
-
-    let products = await query.collect();
 
     if (args.search) {
       const searchLower = args.search.toLowerCase();
