@@ -23,6 +23,7 @@ const Wishlist = lazy(() => import("./pages/Wishlist.tsx"));
 const Account = lazy(() => import("./pages/Account.tsx"));
 const Contacts = lazy(() => import("./pages/Contacts.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
+const Admin = lazy(() => import("./pages/Admin.tsx"));
 
 // Simple loading fallback for route transitions
 function RouteLoading() {
@@ -81,6 +82,7 @@ createRoot(document.getElementById("root")!).render(
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/account" element={<Account />} />
               <Route path="/contacts" element={<Contacts />} />
+              <Route path="/admin" element={<Admin />} />
               <Route path="/auth/redirect" element={<AuthPage redirectAfterAuth="/account" />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
