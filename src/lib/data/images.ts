@@ -1,0 +1,33 @@
+export const images = {
+  hero: "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=1200&q=80",
+  rose: "https://images.unsplash.com/photo-1548586196-aa5823b77379?w=600&q=80",
+  tulip: "https://images.unsplash.com/photo-1520302630591-fd1c66edc19d?w=600&q=80",
+  peony: "https://images.unsplash.com/photo-1562690868-60bbe7293e94?w=600&q=80",
+  orchid: "https://images.unsplash.com/photo-1524592527185-606a436cc4a6?w=600&q=80",
+  wedding: "https://images.unsplash.com/photo-1519741497674-611481863552?w=600&q=80",
+  bouquet1: "https://images.unsplash.com/photo-1591886960571-74d43a9d4166?w=600&q=80",
+  bouquet2: "https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=600&q=80",
+  bouquet3: "https://images.unsplash.com/photo-1508610041839-e022ab75315e?w=600&q=80",
+  bouquet4: "https://images.unsplash.com/photo-1599733589046-10c7f0c3e069?w=600&q=80",
+  florist1: "https://images.unsplash.com/photo-1557428894-56bcc97113fe?w=600&q=80",
+  florist2: "https://images.unsplash.com/photo-1594026112284-02bb6f3352fe?w=600&q=80",
+  florist3: "https://images.unsplash.com/photo-1607749092259-5e70e7b6e081?w=600&q=80",
+  workshop: "https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=800&q=80",
+  delivery: "https://images.unsplash.com/photo-1602607177721-485855ad6072?w=600&q=80",
+  plants: "https://images.unsplash.com/photo-1483794344563-d27a8d18014e?w=600&q=80",
+  gifts: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=600&q=80",
+  tropical: "https://images.unsplash.com/photo-1534885320675-b08aa131cc5e?w=600&q=80",
+  default: "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=600&q=80",
+} as const;
+
+export const productImages: Record<string, string> = {
+  roses: images.rose,
+  tulips: images.tulip,
+  peonies: images.peony,
+  orchids: images.orchid,
+  wedding: images.wedding,
+  author: images.bouquet1,
+  plants: images.plants,
+  gifts: images.gifts,
+  default: images.default,
+};

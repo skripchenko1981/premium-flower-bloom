@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { useState } from "react";
+import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,17 +16,8 @@ import {
   Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
-import Navbar from "@/components/Navbar";
-
-function FadeInSection({ children, className, delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
-  return (
-    <motion.div ref={ref} initial={{ opacity: 0, y: 30 }} animate={isInView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6, delay, ease: [0.25, 0.46, 0.45, 0.94] }} className={className}>
-      {children}
-    </motion.div>
-  );
-}
+import { Layout } from "@/components/Layout";
+import { FadeInSection } from "@/components/FadeInSection";
 
 export default function Contacts() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
@@ -44,8 +35,7 @@ export default function Contacts() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fefdfb]">
-      <Navbar />
+    <Layout>
 
       {/* Header */}
       <section className="pt-24 sm:pt-32 pb-8 bg-white border-b border-stone-100">
@@ -203,6 +193,6 @@ export default function Contacts() {
           </div>
         </div>
       </section>
-    </div>
+    </Layout>
   );
 }

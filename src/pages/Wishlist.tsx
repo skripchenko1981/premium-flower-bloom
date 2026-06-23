@@ -9,35 +9,20 @@ import {
   Trash2,
   ArrowRight,
   ArrowLeft,
-  Flower2,
 } from "lucide-react";
-import Navbar from "@/components/Navbar";
-
-const wishlistImages = {
-  pinkDream: "https://images.unsplash.com/photo-1591886960571-74d43a9d4166?w=400&q=80",
-  royalVelvet: "https://images.unsplash.com/photo-1548586196-aa5823b77379?w=400&q=80",
-  springSymphony: "https://images.unsplash.com/photo-1520302630591-fd1c66edc19d?w=400&q=80",
-  pearlPeony: "https://images.unsplash.com/photo-1562690868-60bbe7293e94?w=400&q=80",
-};
-
-const demoWishlist = [
-  { _id: "w1", productId: "pink-dream", name: "Рожева мрія", price: 1299, oldPrice: 1599, image: wishlistImages.pinkDream, category: "Авторські", inStock: true },
-  { _id: "w2", productId: "royal-velvet", name: "Royal Velvet", price: 1899, image: wishlistImages.royalVelvet, category: "Троянди", inStock: true },
-  { _id: "w3", productId: "pearl-peony", name: "Перлина Півонія", price: 1499, image: wishlistImages.pearlPeony, category: "Півонії", inStock: false },
-];
+import { Layout } from "@/components/Layout";
+import { demoWishlistItems } from "@/lib/data/products";
 
 export default function Wishlist() {
   const navigate = useNavigate();
-  const [items, setItems] = useState(demoWishlist);
+  const [items, setItems] = useState(demoWishlistItems);
 
   const removeItem = (id: string) => {
     setItems((prev) => prev.filter((item) => item._id !== id));
   };
 
   return (
-    <div className="min-h-screen bg-[#fefdfb]">
-      <Navbar />
-
+    <Layout showFooter={false}>
       <section className="pt-24 sm:pt-32 pb-16">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -154,6 +139,6 @@ export default function Wishlist() {
           </div>
         </div>
       </section>
-    </div>
+    </Layout>
   );
 }

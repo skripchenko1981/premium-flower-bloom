@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/use-auth";
@@ -18,27 +18,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-
-const navLinks = [
-  { href: "/catalog", label: "Каталог" },
-  {
-    href: "#",
-    label: "Квіти",
-    children: [
-      { href: "/catalog?category=roses", label: "Троянди" },
-      { href: "/catalog?category=tulips", label: "Тюльпани" },
-      { href: "/catalog?category=peonies", label: "Півонії" },
-      { href: "/catalog?category=orchids", label: "Орхідеї" },
-      { href: "/catalog?category=wedding", label: "Весілля" },
-      { href: "/catalog?category=author", label: "Авторські" },
-      { href: "/catalog?category=plants", label: "Рослини" },
-      { href: "/catalog?category=gifts", label: "Подарунки" },
-    ],
-  },
-  { href: "/delivery", label: "Доставка та оплата" },
-  { href: "/about", label: "Про нас" },
-  { href: "/contacts", label: "Контакти" },
-];
+import { categories } from "@/lib/data/categories";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -47,6 +27,21 @@ export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated, isLoading, signOut } = useAuth();
+
+  const navLinks = useMemo(() => [
+    { href: "/catalog", label: "Каталог" },
+    {
+      href: "#",
+      label: "Квіти",
+      children: categories.map((c) => ({
+        href: `/catalog?category=${c.slug}`,
+        label: c.name,
+      })),
+    },
+    { href: "/delivery", label: "Доставка та оплата" },
+    { href: "/about", label: "Про нас" },
+    { href: "/contacts", label: "Контакти" },
+  ], []);
 
   const cartItems = useQuery(api.shop.getCartItems) ?? [];
   const wishlistItems = useQuery(api.shop.getWishlist) ?? [];

@@ -1,6 +1,6 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router";
-import { motion, useInView } from "framer-motion";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -9,21 +9,17 @@ import {
   User,
   Package,
   Heart,
-  Settings,
   LogOut,
   MapPin,
   Phone,
-  Mail,
-  Flower2,
   ShoppingCart,
-  ChevronRight,
   Clock,
   Check,
   X,
-  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import Navbar from "@/components/Navbar";
+import { Layout } from "@/components/Layout";
+import { FadeInSection } from "@/components/FadeInSection";
 
 type Tab = "profile" | "orders" | "wishlist";
 
@@ -61,16 +57,6 @@ const statusConfig: Record<string, { label: string; color: string; icon: typeof 
   cancelled: { label: "Скасовано", color: "bg-red-100 text-red-700", icon: X },
 };
 
-function FadeInSection({ children, className, delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
-  return (
-    <motion.div ref={ref} initial={{ opacity: 0, y: 30 }} animate={isInView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6, delay, ease: [0.25, 0.46, 0.45, 0.94] }} className={className}>
-      {children}
-    </motion.div>
-  );
-}
-
 export default function Account() {
   const navigate = useNavigate();
   const { user, isLoading, isAuthenticated, signOut } = useAuth();
@@ -84,8 +70,7 @@ export default function Account() {
   // Not authenticated - redirect
   if (!isLoading && !isAuthenticated) {
     return (
-      <div className="min-h-screen bg-[#fefdfb]">
-        <Navbar />
+      <Layout showFooter={false}>
         <section className="pt-24 sm:pt-32 pb-16">
           <div className="max-w-lg mx-auto px-4 text-center py-20">
             <User className="w-16 h-16 text-stone-300 mx-auto mb-4" />
@@ -96,7 +81,7 @@ export default function Account() {
             </Button>
           </div>
         </section>
-      </div>
+    </Layout>
     );
   }
 
@@ -107,8 +92,7 @@ export default function Account() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#fefdfb]">
-      <Navbar />
+    <Layout showFooter={false}>
 
       <section className="pt-24 sm:pt-32 pb-16">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -164,7 +148,7 @@ export default function Account() {
           </div>
         </div>
       </section>
-    </div>
+    </Layout>
   );
 }
 

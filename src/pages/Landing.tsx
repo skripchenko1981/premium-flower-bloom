@@ -1,8 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useRef } from "react";
 import { Link, useNavigate } from "react-router";
-import { motion, useScroll, useTransform, useInView } from "framer-motion";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -18,40 +16,16 @@ import {
   ChevronRight,
   Heart,
   ShoppingCart,
-  Minus,
-  Plus,
   Send,
   Leaf,
-  Palette,
   ThumbsUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import Navbar from "@/components/Navbar";
-
-// Unsplash flower images
-const images = {
-  hero: "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=1200&q=80",
-  rose: "https://images.unsplash.com/photo-1548586196-aa5823b77379?w=600&q=80",
-  tulip: "https://images.unsplash.com/photo-1520302630591-fd1c66edc19d?w=600&q=80",
-  peony: "https://images.unsplash.com/photo-1562690868-60bbe7293e94?w=600&q=80",
-  orchid: "https://images.unsplash.com/photo-1524592527185-606a436cc4a6?w=600&q=80",
-  wedding: "https://images.unsplash.com/photo-1519741497674-611481863552?w=600&q=80",
-  bouquet1: "https://images.unsplash.com/photo-1591886960571-74d43a9d4166?w=600&q=80",
-  bouquet2: "https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=600&q=80",
-  bouquet3: "https://images.unsplash.com/photo-1508610041839-e022ab75315e?w=600&q=80",
-  bouquet4: "https://images.unsplash.com/photo-1599733589046-10c7f0c3e069?w=600&q=80",
-  florist: "https://images.unsplash.com/photo-1557428894-56bcc97113fe?w=600&q=80",
-  delivery: "https://images.unsplash.com/photo-1602607177721-485855ad6072?w=600&q=80",
-};
-
-const categories = [
-  { name: "Троянди", slug: "roses", image: images.rose, count: 24 },
-  { name: "Тюльпани", slug: "tulips", image: images.tulip, count: 16 },
-  { name: "Півонії", slug: "peonies", image: images.peony, count: 12 },
-  { name: "Орхідеї", slug: "orchids", image: images.orchid, count: 18 },
-  { name: "Весілля", slug: "wedding", image: images.wedding, count: 30 },
-  { name: "Подарунки", slug: "gifts", image: images.bouquet4, count: 20 },
-];
+import { Layout } from "@/components/Layout";
+import { FadeInSection } from "@/components/FadeInSection";
+import { images } from "@/lib/data/images";
+import { categories } from "@/lib/data/categories";
+import { popularProducts } from "@/lib/data/products";
 
 const advantages = [
   {
@@ -79,7 +53,7 @@ const advantages = [
 const reviews = [
   {
     name: "Анна К.",
-    text: "Найкрасивіший букет, який я коли-небудь отримувала! Квіти були свіжими та неймовірно пахли. Доставка вчасно з чудовою листівкою.",
+    text: "Найкрасивіший букет, який я коли-небудь отримувала! Квіти були свіжими та неймовірно пахли.",
     rating: 5,
   },
   {
@@ -99,71 +73,6 @@ const reviews = [
   },
 ];
 
-const popularBouquets = [
-  {
-    id: "1",
-    name: "Рожева мрія",
-    price: 1299,
-    oldPrice: 1599,
-    image: images.bouquet1,
-    category: "Авторські",
-    sizes: ["S", "M", "L"],
-    withCard: false,
-  },
-  {
-    id: "2",
-    name: "Ніжний ранок",
-    price: 1499,
-    image: images.bouquet2,
-    category: "Троянди",
-    sizes: ["M", "L"],
-    withCard: false,
-  },
-  {
-    id: "3",
-    name: "Весняна мелодія",
-    price: 999,
-    image: images.bouquet3,
-    category: "Тюльпани",
-    sizes: ["S", "M", "L"],
-    withCard: false,
-  },
-  {
-    id: "4",
-    name: "Королівська розкіш",
-    price: 2499,
-    oldPrice: 2999,
-    image: images.bouquet4,
-    category: "Півонії",
-    sizes: ["L", "XL"],
-    withCard: false,
-  },
-];
-
-function FadeInSection({
-  children,
-  className,
-  delay = 0,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  delay?: number;
-}) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 30 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
 export default function Landing() {
   const navigate = useNavigate();
   const heroRef = useRef<HTMLDivElement>(null);
@@ -172,15 +81,12 @@ export default function Landing() {
   const heroScale = useTransform(scrollY, [0, 400], [1, 0.95]);
 
   return (
-    <div className="min-h-screen bg-[#fefdfb]">
-      <Navbar />
-
+    <Layout>
       {/* Hero Section */}
       <section
         ref={heroRef}
         className="relative min-h-screen flex items-center overflow-hidden"
       >
-        {/* Background */}
         <div className="absolute inset-0">
           <img
             src={images.hero}
@@ -240,7 +146,6 @@ export default function Landing() {
               </Button>
             </motion.div>
 
-            {/* Quick stats */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -263,7 +168,6 @@ export default function Landing() {
           </div>
         </motion.div>
 
-        {/* Scroll indicator */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -297,7 +201,7 @@ export default function Landing() {
           </FadeInSection>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
-            {categories.map((cat, i) => (
+            {categories.slice(0, 6).map((cat, i) => (
               <FadeInSection key={cat.slug} delay={i * 0.08}>
                 <Link
                   to={`/catalog?category=${cat.slug}`}
@@ -341,19 +245,19 @@ export default function Landing() {
           </FadeInSection>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-            {popularBouquets.map((bouquet, i) => (
-              <FadeInSection key={bouquet.id} delay={i * 0.1}>
+            {popularProducts.map((product, i) => (
+              <FadeInSection key={product._id} delay={i * 0.1}>
                 <div className="group bg-white rounded-2xl overflow-hidden border border-stone-100 shadow-sm hover:shadow-xl hover:shadow-stone-200/50 transition-all duration-500 hover:-translate-y-1">
-                  <Link to={`/product/${bouquet.id}`} className="block relative aspect-[4/5] overflow-hidden">
+                  <Link to={`/product/${product.slug}`} className="block relative aspect-[4/5] overflow-hidden">
                     <img
-                      src={bouquet.image}
-                      alt={bouquet.name}
+                      src={product.images[0]}
+                      alt={product.name}
                       className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
                     />
-                    {bouquet.oldPrice && (
+                    {product.oldPrice && (
                       <div className="absolute top-3 left-3">
                         <Badge className="bg-rose-400 text-white border-none text-xs">
-                          -{Math.round((1 - bouquet.price / bouquet.oldPrice) * 100)}%
+                          -{Math.round((1 - product.price / product.oldPrice) * 100)}%
                         </Badge>
                       </div>
                     )}
@@ -369,31 +273,31 @@ export default function Landing() {
                   </Link>
                   <div className="p-5">
                     <div className="text-xs text-rose-400 font-medium mb-1.5 uppercase tracking-wider">
-                      {bouquet.category}
+                      {product.categoryName || product.category}
                     </div>
                     <Link
-                      to={`/product/${bouquet.id}`}
+                      to={`/product/${product.slug}`}
                       className="block font-medium text-stone-800 hover:text-rose-500 transition-colors text-lg"
                     >
-                      {bouquet.name}
+                      {product.name}
                     </Link>
                     <div className="mt-2 flex items-center gap-2">
-                      {bouquet.oldPrice && (
+                      {product.oldPrice && (
                         <span className="text-sm text-stone-300 line-through">
-                          ₴{bouquet.oldPrice}
+                          ₴{product.oldPrice}
                         </span>
                       )}
                       <span className="text-xl font-medium text-stone-800">
-                        ₴{bouquet.price}
+                        ₴{product.price}
                       </span>
                     </div>
                     <div className="mt-3 flex gap-1.5">
-                      {bouquet.sizes.map((s) => (
+                      {product.sizes.map((s) => (
                         <span
-                          key={s}
+                          key={s.name}
                           className="text-xs px-2.5 py-1 rounded-full bg-stone-50 text-stone-500 border border-stone-100"
                         >
-                          {s}
+                          {s.name}
                         </span>
                       ))}
                     </div>
@@ -539,83 +443,6 @@ export default function Landing() {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-stone-900 text-white py-16 sm:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <Flower2 className="w-7 h-7 text-rose-400" />
-                <span className="text-xl font-light font-serif tracking-wide">
-                  Flower <span className="text-rose-400">Bloom</span>
-                </span>
-              </div>
-              <p className="text-stone-400 text-sm leading-relaxed">
-                Преміум букети, створені з любов'ю.
-                Доставка по місту — сьогодні, вчасно та з усмішкою.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-medium text-white mb-4">Каталог</h4>
-              <div className="space-y-2.5">
-                {["Троянди", "Тюльпани", "Півонії", "Орхідеї", "Весілля", "Подарунки"].map((c) => (
-                  <Link
-                    key={c}
-                    to={`/catalog?category=${c.toLowerCase()}`}
-                    className="block text-stone-400 hover:text-rose-400 text-sm transition-colors"
-                  >
-                    {c}
-                  </Link>
-                ))}
-              </div>
-            </div>
-            <div>
-              <h4 className="font-medium text-white mb-4">Інформація</h4>
-              <div className="space-y-2.5">
-                {[
-                  { label: "Про нас", to: "/about" },
-                  { label: "Доставка та оплата", to: "/delivery" },
-                  { label: "Контакти", to: "/contacts" },
-                  { label: "FAQ", to: "/delivery" },
-                ].map((link) => (
-                  <Link
-                    key={link.label}
-                    to={link.to}
-                    className="block text-stone-400 hover:text-rose-400 text-sm transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
-            <div>
-              <h4 className="font-medium text-white mb-4">Контакти</h4>
-              <div className="space-y-2.5 text-stone-400 text-sm">
-                <p>+380 (44) 123-45-67</p>
-                <p>hello@flowerbloom.ua</p>
-                <p>Київ, вул. Хрещатик, 25</p>
-                <p className="text-stone-500 text-xs mt-3">
-                  Пн—Нд: 8:00 – 22:00
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="mt-12 pt-8 border-t border-stone-800 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <p className="text-stone-500 text-xs">
-              © 2025 Flower Bloom. Усі права захищено.
-            </p>
-            <div className="flex gap-6">
-              <span className="text-stone-500 text-xs hover:text-rose-400 cursor-pointer transition-colors">
-                Instagram
-              </span>
-              <span className="text-stone-500 text-xs hover:text-rose-400 cursor-pointer transition-colors">
-                Telegram
-              </span>
-            </div>
-          </div>
-        </div>
-      </footer>
-    </div>
+    </Layout>
   );
 }

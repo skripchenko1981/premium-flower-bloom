@@ -21,26 +21,8 @@ import {
   Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import Navbar from "@/components/Navbar";
-
-const demoCartItems = [  { _id: "c1",
-    productId: "1",
-    productName: "Рожева мрія",
-    productImage: "https://images.unsplash.com/photo-1591886960571-74d43a9d4166?w=400&q=80",
-    price: 1299,
-    quantity: 1,
-    size: "M",
-    withCard: false,
-  },  { _id: "c2",
-    productId: "2",
-    productName: "Royal Velvet",
-    productImage: "https://images.unsplash.com/photo-1548586196-aa5823b77379?w=400&q=80",
-    price: 1899,
-    quantity: 2,
-    size: "L",
-    withCard: true,
-  },
-];
+import { Layout } from "@/components/Layout";
+import { demoCartItems } from "@/lib/data/products";
 
 export default function Cart() {
   const navigate = useNavigate();
@@ -100,8 +82,7 @@ export default function Cart() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fefdfb]">
-      <Navbar />
+    <Layout showFooter={false}>
 
       <section className="pt-24 sm:pt-32 pb-16">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -306,6 +287,6 @@ export default function Cart() {
           )}
         </div>
       </section>
-    </div>
+    </Layout>
   );
 }

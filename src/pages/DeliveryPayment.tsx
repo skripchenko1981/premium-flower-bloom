@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { useState } from "react";
+import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import {
   Truck,
@@ -13,11 +13,11 @@ import {
   Banknote,
   Smartphone,
   Store,
-  HelpCircle,
   ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import Navbar from "@/components/Navbar";
+import { Layout } from "@/components/Layout";
+import { FadeInSection } from "@/components/FadeInSection";
 
 const faqs = [
   { q: "Яка мінімальна сума замовлення?", a: "Мінімальне замовлення — ₴500. Для замовлень понад ₴2 000 доставка по місту безкоштовна." },
@@ -30,24 +30,11 @@ const faqs = [
   { q: "Чи можна замовити анонімно для отримувача?", a: "Звісно! У примітках до замовлення просто вкажіть, що не хочете розкривати своє ім'я отримувачу." },
 ];
 
-function FadeInSection({ children, className, delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
-  return (
-    <motion.div ref={ref} initial={{ opacity: 0, y: 30 }} animate={isInView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6, delay, ease: [0.25, 0.46, 0.45, 0.94] }} className={className}>
-      {children}
-    </motion.div>
-  );
-}
-
 export default function DeliveryPayment() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   return (
-    <div className="min-h-screen bg-[#fefdfb]">
-      <Navbar />
-
-      {/* Header */}
+    <Layout>
       <section className="pt-24 sm:pt-32 pb-8 bg-white border-b border-stone-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
@@ -65,7 +52,6 @@ export default function DeliveryPayment() {
         </div>
       </section>
 
-      {/* Delivery Methods */}
       <section className="py-16 sm:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInSection className="text-center mb-14">
@@ -76,27 +62,9 @@ export default function DeliveryPayment() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             {[
-              {
-                icon: Clock,
-                title: "Експрес доставка",
-                price: "₴300",
-                desc: "Протягом 60–90 хвилин після підтвердження замовлення. Найшвидший спосіб надіслати квіти.",
-                features: ["Доставка за 60–90 хв", "SMS-сповіщення", "Відстеження кур'єра"],
-              },
-              {
-                icon: Truck,
-                title: "Стандартна доставка",
-                price: "₴150 / Безкоштовно від ₴2000",
-                desc: "Протягом 2–4 годин. Доступна по всьому місту щодня.",
-                features: ["Доставка за 2–4 години", "Безкоштовно для замовлень від ₴2000", "Доступна безконтактна доставка"],
-              },
-              {
-                icon: Store,
-                title: "Самовивіз",
-                price: "Безкоштовно",
-                desc: "Заберіть свій букет у нашому магазині. Підготуємо до узгодженого часу.",
-                features: ["вул. Хрещатик, 25", "Пн–Нд, 8:00–22:00", "Рекомендуємо попереднє замовлення"],
-              },
+              { icon: Clock, title: "Експрес доставка", price: "₴300", desc: "Протягом 60–90 хвилин після підтвердження замовлення.", features: ["Доставка за 60–90 хв", "SMS-сповіщення", "Відстеження кур'єра"] },
+              { icon: Truck, title: "Стандартна доставка", price: "₴150 / Безкоштовно від ₴2000", desc: "Протягом 2–4 годин. Доступна по всьому місту щодня.", features: ["Доставка за 2–4 години", "Безкоштовно для замовлень від ₴2000", "Доступна безконтактна доставка"] },
+              { icon: Store, title: "Самовивіз", price: "Безкоштовно", desc: "Заберіть свій букет у нашому магазині.", features: ["вул. Хрещатик, 25", "Пн–Нд, 8:00–22:00", "Рекомендуємо попереднє замовлення"] },
             ].map((method, i) => (
               <FadeInSection key={method.title} delay={i * 0.1}>
                 <div className="bg-white rounded-2xl border border-stone-100 p-8 shadow-sm hover:shadow-lg transition-all duration-300 h-full">
@@ -121,7 +89,6 @@ export default function DeliveryPayment() {
         </div>
       </section>
 
-      {/* Delivery Zones */}
       <section className="py-16 sm:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInSection className="text-center mb-14">
@@ -129,7 +96,6 @@ export default function DeliveryPayment() {
               Зони <span className="text-rose-400 italic">доставки</span>
             </h2>
           </FadeInSection>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {[
               { zone: "Центр", price: "від ₴150", areas: "Шевченківський, Печерський, Подільський", time: "60–90 хв" },
@@ -153,7 +119,6 @@ export default function DeliveryPayment() {
         </div>
       </section>
 
-      {/* Payment Methods */}
       <section className="py-16 sm:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInSection className="text-center mb-14">
@@ -161,7 +126,6 @@ export default function DeliveryPayment() {
               Способи <span className="text-rose-400 italic">оплати</span>
             </h2>
           </FadeInSection>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {[
               { icon: CreditCard, title: "Картка онлайн", desc: "Visa, Mastercard. Безпечний платіж через LiqPay." },
@@ -183,7 +147,6 @@ export default function DeliveryPayment() {
         </div>
       </section>
 
-      {/* Guarantees */}
       <section className="py-16 sm:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInSection className="text-center mb-14">
@@ -191,12 +154,11 @@ export default function DeliveryPayment() {
               Наші <span className="text-rose-400 italic">Гарантії</span>
             </h2>
           </FadeInSection>
-
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
             {[
               { icon: ShieldCheck, title: "Гарантія свіжості", desc: "Якщо квіти зів'януть протягом 3 днів, ми замінимо букет безкоштовно." },
-              { icon: Package, title: "Надійне пакування", desc: "Кожен букет упакований у гідратаційний пакет та крафтову обгортку. Захист від вітру, холоду та спеки." },
-              { icon: Flower2, title: "Фото перед відправкою", desc: "Надсилаємо фото готового букета перед виїздом кур'єра, щоб ви знали, що саме буде доставлено." },
+              { icon: Package, title: "Надійне пакування", desc: "Кожен букет упакований у гідратаційний пакет та крафтову обгортку." },
+              { icon: Flower2, title: "Фото перед відправкою", desc: "Надсилаємо фото готового букета перед виїздом кур'єра." },
             ].map((g, i) => (
               <FadeInSection key={g.title} delay={i * 0.1}>
                 <div className="p-8 rounded-2xl border border-stone-100 bg-[#fefdfb] hover:border-green-100 transition-all duration-300 text-center">
@@ -212,7 +174,6 @@ export default function DeliveryPayment() {
         </div>
       </section>
 
-      {/* FAQ */}
       <section className="py-16 sm:py-24">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInSection className="text-center mb-14">
@@ -220,7 +181,6 @@ export default function DeliveryPayment() {
               Часті <span className="text-rose-400 italic">Запитання</span>
             </h2>
           </FadeInSection>
-
           <div className="space-y-3">
             {faqs.map((faq, i) => (
               <FadeInSection key={i} delay={i * 0.05}>
@@ -249,6 +209,6 @@ export default function DeliveryPayment() {
           </div>
         </div>
       </section>
-    </div>
+    </Layout>
   );
 }

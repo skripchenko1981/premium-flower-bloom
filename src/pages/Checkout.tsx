@@ -14,12 +14,10 @@ import {
   Store,
   Clock,
   MapPin,
-  Phone,
-  Mail,
   Flower2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import Navbar from "@/components/Navbar";
+import { Layout } from "@/components/Layout";
 
 const deliveryMethods = [
   {
@@ -84,8 +82,7 @@ export default function Checkout() {
 
   if (step === "success") {
     return (
-      <div className="min-h-screen bg-[#fefdfb]">
-        <Navbar />
+      <Layout showFooter={false}>
         <section className="pt-24 sm:pt-32 pb-16">
           <div className="max-w-lg mx-auto px-4 text-center">
             <motion.div
@@ -116,13 +113,12 @@ export default function Checkout() {
             </div>
           </div>
         </section>
-      </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#fefdfb]">
-      <Navbar />
+    <Layout showFooter={false}>
       <section className="pt-24 sm:pt-32 pb-16">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-stone-400 hover:text-rose-500 text-sm mb-8 transition-colors">
@@ -359,6 +355,6 @@ export default function Checkout() {
           </form>
         </div>
       </section>
-    </div>
+    </Layout>
   );
 }

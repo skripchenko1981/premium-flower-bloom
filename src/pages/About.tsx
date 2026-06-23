@@ -1,33 +1,23 @@
 import { motion } from "framer-motion";
-import { useRef } from "react";
-import { useInView } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Flower2,
   Heart,
   Award,
-  Star,
   Users,
   ArrowRight,
-  Leaf,
-  ShieldCheck,
   GraduationCap,
   Medal,
 } from "lucide-react";
-import Navbar from "@/components/Navbar";
 import { Link } from "react-router";
-
-const images = {
-  florist1: "https://images.unsplash.com/photo-1557428894-56bcc97113fe?w=600&q=80",
-  florist2: "https://images.unsplash.com/photo-1594026112284-02bb6f3352fe?w=600&q=80",
-  florist3: "https://images.unsplash.com/photo-1607749092259-5e70e7b6e081?w=600&q=80",
-  workshop: "https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=800&q=80",
-};
+import { Layout } from "@/components/Layout";
+import { FadeInSection } from "@/components/FadeInSection";
+import { images } from "@/lib/data/images";
 
 const florists = [
-  { name: "Олена Іванова", role: "Головний флорист", experience: "12 років", image: images.florist1, bio: "Закінчила Київську школу флористики. Учасниця та переможниця міжнародних конкурсів флористики. Спеціалізується на весільних композиціях." },
-  { name: "Марія Коваленко", role: "Старший флорист", experience: "8 років", image: images.florist2, bio: "Експерт з голландських технік аранжування букетів. Створює авторські композиції, які стають родзинкою будь-якої події." },
+  { name: "Олена Іванова", role: "Головний флорист", experience: "12 років", image: images.florist1, bio: "Закінчила Київську школу флористики. Учасниця та переможниця міжнародних конкурсів флористики." },
+  { name: "Марія Коваленко", role: "Старший флорист", experience: "8 років", image: images.florist2, bio: "Експерт з голландських технік аранжування букетів. Створює авторські композиції." },
   { name: "Катерина Шевченко", role: "Флорист-декоратор", experience: "6 років", image: images.florist3, bio: "Спеціаліст з оформлення заходів та весіль. Перетворює простори на квіткові казки." },
 ];
 
@@ -46,20 +36,9 @@ const milestones = [
   { year: "2025", title: "Сьогодні", desc: "Понад 15 000 задоволених клієнтів, 300+ унікальних дизайнів, і ми продовжуємо рости." },
 ];
 
-function FadeInSection({ children, className, delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
-  return (
-    <motion.div ref={ref} initial={{ opacity: 0, y: 30 }} animate={isInView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6, delay, ease: [0.25, 0.46, 0.45, 0.94] }} className={className}>
-      {children}
-    </motion.div>
-  );
-}
-
 export default function About() {
   return (
-    <div className="min-h-screen bg-[#fefdfb]">
-      <Navbar />
+    <Layout>
 
       {/* Header */}
       <section className="pt-24 sm:pt-32 pb-8 bg-white border-b border-stone-100">
@@ -258,6 +237,6 @@ export default function About() {
           </FadeInSection>
         </div>
       </section>
-    </div>
+    </Layout>
   );
 }

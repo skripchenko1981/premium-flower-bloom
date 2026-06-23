@@ -13,58 +13,20 @@ import {
   ShoppingCart,
   Heart,
   ChevronDown,
-  Star,
   Grid3X3,
   List,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import Navbar from "@/components/Navbar";
-
-const categoriesList = [
-  { name: "Усі", slug: "" },
-  { name: "Троянди", slug: "roses" },
-  { name: "Тюльпани", slug: "tulips" },
-  { name: "Півонії", slug: "peonies" },
-  { name: "Орхідеї", slug: "orchids" },
-  { name: "Весілля", slug: "wedding" },
-  { name: "Авторські", slug: "author" },
-  { name: "Рослини", slug: "plants" },
-  { name: "Подарунки", slug: "gifts" },
-];
+import { Layout } from "@/components/Layout";
+import { categoriesWithAll } from "@/lib/data/categories";
+import { demoProducts } from "@/lib/data/products";
+import { images } from "@/lib/data/images";
 
 const sortOptions = [
   { label: "Новинки", value: "" },
   { label: "Ціна: Низька–Висока", value: "price-asc" },
   { label: "Ціна: Висока–Низька", value: "price-desc" },
   { label: "Назва: А–Я", value: "name" },
-];
-
-const productImages = {
-  roses: "https://images.unsplash.com/photo-1548586196-aa5823b77379?w=600&q=80",
-  tulips: "https://images.unsplash.com/photo-1520302630591-fd1c66edc19d?w=600&q=80",
-  peonies: "https://images.unsplash.com/photo-1562690868-60bbe7293e94?w=600&q=80",
-  orchids: "https://images.unsplash.com/photo-1524592527185-606a436cc4a6?w=600&q=80",
-  wedding: "https://images.unsplash.com/photo-1519741497674-611481863552?w=600&q=80",
-  author: "https://images.unsplash.com/photo-1591886960571-74d43a9d4166?w=600&q=80",
-  plants: "https://images.unsplash.com/photo-1483794344563-d27a8d18014e?w=600&q=80",
-  gifts: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=600&q=80",
-  default: "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=600&q=80",
-};
-
-// Demo products until backend has real data
-const demoProducts = [
-  { _id: "1", name: "Pink Dream", slug: "pink-dream", price: 1299, oldPrice: 1599, category: "author", images: [productImages.author], inStock: true, featured: true, popular: true, description: "Delicate bouquet of pink roses", sizes: [{ name: "S", price: 999 }, { name: "M", price: 1299 }, { name: "L", price: 1699 }] },
-  { _id: "2", name: "Royal Velvet", slug: "royal-velvet", price: 1899, category: "roses", images: [productImages.roses], inStock: true, featured: true, popular: true, description: "25 red Ecuadorian roses", sizes: [{ name: "M", price: 1899 }, { name: "L", price: 2399 }] },
-  { _id: "3", name: "Spring Symphony", slug: "spring-symphony", price: 899, oldPrice: 1199, category: "tulips", images: [productImages.tulips], inStock: true, popular: true, description: "Mix of colorful tulips", sizes: [{ name: "S", price: 699 }, { name: "M", price: 899 }] },
-  { _id: "4", name: "Pearl Peony", slug: "pearl-peony", price: 1499, category: "peonies", images: [productImages.peonies], inStock: true, featured: true, description: "Delicate peony arrangement", sizes: [{ name: "M", price: 1499 }, { name: "L", price: 1999 }] },
-  { _id: "5", name: "White Orchid", slug: "white-orchid", price: 2199, oldPrice: 2699, category: "orchids", images: [productImages.orchids], inStock: true, featured: true, description: "Premium phalaenopsis orchid", sizes: [{ name: "M", price: 2199 }, { name: "L", price: 2799 }] },
-  { _id: "6", name: "Bride's Dream", slug: "brides-dream", price: 3499, category: "wedding", images: [productImages.wedding], inStock: true, popular: true, description: "Luxurious wedding bouquet", sizes: [{ name: "M", price: 3499 }, { name: "L", price: 4499 }] },
-  { _id: "7", name: "Ficus Elegance", slug: "ficus-elegance", price: 799, category: "plants", images: [productImages.plants], inStock: true, description: "Beautiful indoor ficus plant", sizes: [{ name: "S", price: 799 }] },
-  { _id: "8", name: "Gift Box Deluxe", slug: "gift-box-deluxe", price: 1599, category: "gifts", images: [productImages.gifts], inStock: true, featured: true, description: "Premium gift set with flowers", sizes: [{ name: "M", price: 1599 }] },
-  { _id: "9", name: "Scarlet Passion", slug: "scarlet-passion", price: 2499, category: "roses", images: ["https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=600&q=80"], inStock: true, description: "51 red roses in a box", sizes: [{ name: "L", price: 2499 }] },
-  { _id: "10", name: "Tulip Fields", slug: "tulip-fields", price: 1099, category: "tulips", images: ["https://images.unsplash.com/photo-1508610041839-e022ab75315e?w=600&q=80"], inStock: true, description: "Dutch tulip arrangement", sizes: [{ name: "M", price: 1099 }] },
-  { _id: "11", name: "Lavender Dreams", slug: "lavender-dreams", price: 1799, category: "author", images: ["https://images.unsplash.com/photo-1599733589046-10c7f0c3e069?w=600&q=80"], inStock: true, description: "Florist's signature arrangement", sizes: [{ name: "M", price: 1799 }, { name: "L", price: 2299 }] },
-  { _id: "12", name: "Tropical Paradise", slug: "tropical-paradise", price: 2899, category: "orchids", images: ["https://images.unsplash.com/photo-1534885320675-b08aa131cc5e?w=600&q=80"], inStock: false, description: "Exotic orchid arrangement", sizes: [{ name: "L", price: 2899 }] },
 ];
 
 export default function Catalog() {
@@ -110,8 +72,7 @@ export default function Catalog() {
   }, [activeCategory, search]);
 
   return (
-    <div className="min-h-screen bg-[#fefdfb]">
-      <Navbar />
+    <Layout showFooter={false}>
       
       {/* Header */}
       <section className="pt-24 pb-8 sm:pt-32 sm:pb-12 bg-white border-b border-stone-100">
@@ -136,7 +97,7 @@ export default function Catalog() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3 py-3 overflow-x-auto scrollbar-none">
             {/* Category pills */}
-            {categoriesList.map((cat) => (
+            {categoriesWithAll.map((cat) => (
               <button
                 key={cat.slug}
                 onClick={() => setActiveCategory(cat.slug)}
@@ -264,7 +225,7 @@ export default function Catalog() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: i * 0.04 }}
                 >
-                  <ProductCard product={product} categoriesList={categoriesList} />
+                  <ProductCard product={product} categories={categoriesWithAll} />
                 </motion.div>
               ))}
             </div>
@@ -277,24 +238,24 @@ export default function Catalog() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: i * 0.04 }}
                 >
-                  <ProductRow product={product} categoriesList={categoriesList} />
+                  <ProductRow product={product} categories={categoriesWithAll} />
                 </motion.div>
               ))}
             </div>
           )}
         </div>
       </section>
-    </div>
+    </Layout>
   );
 }
 
-function ProductCard({ product, categoriesList }: { product: any; categoriesList: any[] }) {
-  const catName = categoriesList.find((c) => c.slug === product.category)?.name || product.category;
+function ProductCard({ product, categories }: { product: any; categories: any[] }) {
+  const catName = categories.find((c) => c.slug === product.category)?.name || product.category;
   return (
     <div className="group bg-white rounded-2xl overflow-hidden border border-stone-100 shadow-sm hover:shadow-xl hover:shadow-stone-200/50 transition-all duration-500 hover:-translate-y-1">
       <Link to={`/product/${product.slug}`} className="block relative aspect-[4/5] overflow-hidden">
         <img
-          src={product.images?.[0] || productImages.default}
+          src={product.images?.[0] || images.default}
           alt={product.name}
           className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
         />
@@ -343,12 +304,12 @@ function ProductCard({ product, categoriesList }: { product: any; categoriesList
   );
 }
 
-function ProductRow({ product, categoriesList }: { product: any; categoriesList: any[] }) {
-  const catName = categoriesList.find((c) => c.slug === product.category)?.name || product.category;
+function ProductRow({ product, categories }: { product: any; categories: any[] }) {
+  const catName = categories.find((c) => c.slug === product.category)?.name || product.category;
   return (
     <div className="flex items-center gap-4 sm:gap-6 bg-white rounded-2xl border border-stone-100 p-4 shadow-sm hover:shadow-md transition-all duration-300">
       <Link to={`/product/${product.slug}`} className="shrink-0 w-20 h-20 sm:w-28 sm:h-28 rounded-xl overflow-hidden">
-        <img src={product.images?.[0] || productImages.default} alt={product.name} className="w-full h-full object-cover" />
+        <img src={product.images?.[0] || images.default} alt={product.name} className="w-full h-full object-cover" />
       </Link>
       <div className="flex-1 min-w-0">
         <div className="text-[10px] text-rose-400 font-medium uppercase tracking-wider">{catName}</div>

@@ -15,65 +15,12 @@ import {
   Truck,
   ShieldCheck,
   Clock,
-  Minus,
-  Plus,
   Flower2,
   Gift,
-  MessageCircle,
-  ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import Navbar from "@/components/Navbar";
-
-// Demo product data
-const demoProducts: Record<string, any> = {
-  "pink-dream": {
-    _id: "1", name: "Pink Dream", slug: "pink-dream", price: 1299, oldPrice: 1599,
-    category: "author", categoryName: "Author's",
-    images: [
-      "https://images.unsplash.com/photo-1591886960571-74d43a9d4166?w=800&q=80",
-      "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=800&q=80",
-      "https://images.unsplash.com/photo-1599733589046-10c7f0c3e069?w=800&q=80",
-    ],
-    inStock: true,
-    description: "Delicate bouquet of pink roses with eucalyptus and gypsophila. Perfect for a romantic date, birthday, or just to bring joy. Each bouquet is handcrafted by our florists with love and attention to detail. We use only the freshest flowers sourced from the best growers.",
-    careTips: "Change water daily, trim stems at an angle every 2 days, keep away from direct sunlight and drafts.",
-    sizes: [
-      { name: "S", label: "Small (15 stems)", price: 999 },
-      { name: "M", label: "Medium (25 stems)", price: 1299 },
-      { name: "L", label: "Large (35 stems)", price: 1699 },
-    ],
-  },
-  "royal-velvet": {
-    _id: "2", name: "Royal Velvet", slug: "royal-velvet", price: 1899,
-    category: "roses", categoryName: "Roses",
-    images: [
-      "https://images.unsplash.com/photo-1548586196-aa5823b77379?w=800&q=80",
-      "https://images.unsplash.com/photo-1561181286-d3fee7d55364?w=800&q=80",
-    ],
-    inStock: true,
-    description: "Luxurious bouquet of 25 red Ecuadorian roses. The deep velvet texture of the petals creates an unforgettable impression. Perfect for expressing deep feelings and important occasions.",
-    careTips: "Use the included flower food packet. Change water every 1-2 days. Keep in a cool place.",
-    sizes: [
-      { name: "M", label: "Medium (25 roses)", price: 1899 },
-      { name: "L", label: "Large (51 roses)", price: 3499 },
-    ],
-  },
-  "spring-symphony": {
-    _id: "3", name: "Spring Symphony", slug: "spring-symphony", price: 899, oldPrice: 1199,
-    category: "tulips", categoryName: "Tulips",
-    images: [
-      "https://images.unsplash.com/photo-1520302630591-fd1c66edc19d?w=800&q=80",
-      "https://images.unsplash.com/photo-1508610041839-e022ab75315e?w=800&q=80",
-    ],
-    inStock: true,
-    description: "A vibrant mix of colorful Dutch tulips that brings the joy of spring. Yellow, pink, and white tulips in a carefully arranged bouquet.",
-    sizes: [
-      { name: "S", label: "Small (11 tulips)", price: 699 },
-      { name: "M", label: "Medium (21 tulips)", price: 899 },
-    ],
-  },
-};
+import { Layout } from "@/components/Layout";
+import { getProductBySlug } from "@/lib/data/products";
 
 const reviews = [
   { id: "1", userName: "Anna K.", rating: 5, text: "The most beautiful bouquet I've ever received! Flowers were fresh for almost 2 weeks.", createdAt: Date.now() - 86400000 * 3 },
@@ -93,7 +40,7 @@ export default function ProductDetail() {
 
   // Try backend first
   const product = useQuery(api.shop.getProductBySlug, { slug: slug || "" });
-  const data = product ?? demoProducts[slug || ""];
+  const data = product ?? getProductBySlug(slug || "");
 
   if (!data) {
     return (
@@ -112,8 +59,7 @@ export default function ProductDetail() {
   const currentPrice = data.sizes?.find((s: any) => s.name === selectedSize)?.price || data.price;
 
   return (
-    <div className="min-h-screen bg-[#fefdfb]">
-      <Navbar />
+    <Layout>
 
       <section className="pt-24 sm:pt-32 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -340,7 +286,7 @@ export default function ProductDetail() {
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
               {["royal-velvet", "spring-symphony", "pearl-peony"].map((s) => {
-                const rp = demoProducts[s];
+                const rp = getProductBySlug(s);
                 if (!rp || rp.slug === slug) return null;
                 return (
                   <Link key={s} to={`/product/${rp.slug}`} className="group bg-white rounded-2xl overflow-hidden border border-stone-100 shadow-sm hover:shadow-lg transition-all duration-300">
@@ -362,6 +308,6 @@ export default function ProductDetail() {
           </div>
         </div>
       </section>
-    </div>
+    </Layout>
   );
 }
