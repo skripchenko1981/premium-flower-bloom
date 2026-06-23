@@ -21,6 +21,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Layout } from "@/components/Layout";
 import { getProductBySlug } from "@/lib/data/products";
+import { categoriesWithAll } from "@/lib/data/categories";
 
 const reviews = [
   { id: "1", userName: "Anna K.", rating: 5, text: "The most beautiful bouquet I've ever received! Flowers were fresh for almost 2 weeks.", createdAt: Date.now() - 86400000 * 3 },
@@ -111,7 +112,7 @@ export default function ProductDetail() {
             {/* Product Info */}
             <div>
               <div className="text-xs text-rose-400 font-medium uppercase tracking-wider mb-2">
-                {data.categoryName || data.category}
+                {categoriesWithAll.find((c) => c.slug === data.category)?.name || data.category}
               </div>
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-light text-stone-900 font-serif tracking-tight">
                 {data.name}
@@ -294,7 +295,7 @@ export default function ProductDetail() {
                       <img src={rp.images[0]} alt={rp.name} className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" />
                     </div>
                     <div className="p-4">
-                      <div className="text-[10px] text-rose-400 font-medium uppercase tracking-wider">{rp.categoryName || rp.category}</div>
+                      <div className="text-[10px] text-rose-400 font-medium uppercase tracking-wider">{categoriesWithAll.find((c) => c.slug === rp.category)?.name || rp.category}</div>
                       <h3 className="font-medium text-stone-800 text-sm mt-1">{rp.name}</h3>
                       <div className="flex items-center gap-2 mt-1">
                         {rp.oldPrice && <span className="text-xs text-stone-300 line-through">₴{rp.oldPrice}</span>}
