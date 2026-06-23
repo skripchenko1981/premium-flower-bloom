@@ -1,0 +1,1 @@
+import{a as r,d as c,j as u,m as p}from"./framer-motion-DC3FB2FQ.js";function x({children:i,className:n,delay:e=0,margin:a="-80px",distance:o=30}){const t=r.useRef(null),s=c(t,{once:!0,margin:a});return u.jsx(p.div,{ref:t,initial:{opacity:0,y:o},animate:s?{opacity:1,y:0}:{},transition:{duration:.6,delay:e,ease:[.25,.46,.45,.94]},className:n,children:i})}export{x as F};
