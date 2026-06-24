@@ -243,7 +243,7 @@ function OrdersTab() {
           </div>
         ) : (
           demoOrders.map((order) => {
-            const status = statusConfig[order.status] || statusConfig.pending;
+            const status = statusConfig[order.status] || statusConfig["pending"];
             const StatusIcon = status.icon;
             const date = new Date(order.createdAt);
 

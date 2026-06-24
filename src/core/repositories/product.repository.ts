@@ -12,7 +12,7 @@ function mapDemoProduct(p: (typeof demoProducts)[number]): Product {
     name: p.name,
     slug: p.slug,
     price: p.price,
-    oldPrice: p.oldPrice ?? undefined,
+    oldPrice: p.oldPrice,
     category: p.category,
     images: p.images,
     inStock: p.inStock,

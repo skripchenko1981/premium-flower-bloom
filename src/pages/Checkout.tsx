@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { motion } from "framer-motion";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -63,8 +61,6 @@ export default function Checkout() {
     notes: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const _createOrder = useMutation(api.shop.createOrder);
 
   const selectedDelivery = deliveryMethods.find((d) => d.id === deliveryMethod)!;
 

@@ -23,7 +23,6 @@ import {
 
 import { Layout } from "@/components/Layout";
 import { FadeInSection } from "@/components/FadeInSection";
-import { cn } from "@/lib/utils";
 import { images } from "@/lib/data/images";
 import { categories } from "@/lib/data/categories";
 import { popularProducts } from "@/lib/data/products";

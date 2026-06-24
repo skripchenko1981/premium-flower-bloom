@@ -22,7 +22,6 @@ import {
 } from "lucide-react";
 
 import { Layout } from "@/components/Layout";
-import { cn } from "@/lib/utils";
 import { demoCartItems } from "@/lib/data/products";
 
 export default function Cart() {

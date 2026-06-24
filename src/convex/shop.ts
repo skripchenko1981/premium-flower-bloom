@@ -136,8 +136,8 @@ export const addToCart = mutation({
         userId,
         productId: args.productId,
         quantity: args.quantity,
-        size: args.size,
-        withCard: args.withCard,
+        ...(args.size !== undefined ? { size: args.size } : {}),
+        ...(args.withCard !== undefined ? { withCard: args.withCard } : {}),
       });
     }
   },
@@ -267,7 +267,7 @@ export const createOrder = mutation({
       status: "pending",
       subtotal: args.subtotal,
       total: args.total,
-      discount: args.discount,
+      ...(args.discount !== undefined ? { discount: args.discount } : {}),
       promocode: args.promocode,
       shippingMethod: args.shippingMethod,
       shippingCost: args.shippingCost,
@@ -359,7 +359,7 @@ export const submitContactMessage = mutation({
     await ctx.db.insert("contactMessages", {
       name: args.name,
       email: args.email,
-      phone: args.phone,
+      ...(args.phone !== undefined ? { phone: args.phone } : {}),
       message: args.message,
       read: false,
       createdAt: Date.now(),
