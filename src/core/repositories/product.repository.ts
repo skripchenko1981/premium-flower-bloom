@@ -12,14 +12,14 @@ function mapDemoProduct(p: (typeof demoProducts)[number]): Product {
     name: p.name,
     slug: p.slug,
     price: p.price,
-    oldPrice: p.oldPrice,
+    ...(p.oldPrice !== undefined ? { oldPrice: p.oldPrice } : {}),
     category: p.category,
     images: p.images,
     inStock: p.inStock,
-    featured: p.featured,
-    popular: p.popular,
+    ...(p.featured !== undefined ? { featured: p.featured } : {}),
+    ...(p.popular !== undefined ? { popular: p.popular } : {}),
     description: p.description,
-    careTips: p.careTips,
+    ...(p.careTips !== undefined ? { careTips: p.careTips } : {}),
     sizes: p.sizes,
   };
 }
