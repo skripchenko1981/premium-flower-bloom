@@ -12,7 +12,7 @@ function mapDemoProduct(p: (typeof demoProducts)[number]): Product {
     name: p.name,
     slug: p.slug,
     price: p.price,
-    oldPrice: p.oldPrice,
+    oldPrice: p.oldPrice ?? undefined,
     category: p.category,
     images: p.images,
     inStock: p.inStock,
@@ -68,7 +68,7 @@ function filterDemoProducts(filter?: ProductFilter): Product[] {
  */
 export class ProductRepository implements IProductRepository {
   getAll(filter?: ProductFilter): Product[] {
-    return filterProducts(filter);
+    return filterDemoProducts(filter);
   }
 
   getBySlug(slug: string): Product | null {

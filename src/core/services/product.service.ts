@@ -3,33 +3,42 @@ import type { IProductRepository, ICategoryRepository } from "@/core/domain/repo
 import type { Product, ProductFilter } from "@/core/domain/entities";
 
 export class ProductService implements IProductService {
-  constructor(
-    private readonly productRepo: IProductRepository,
-    private readonly categoryRepo: ICategoryRepository,
-  ) {}
+  private productRepo: IProductRepository;
+  private categoryRepo: ICategoryRepository;
 
-  getProducts(filter?: ProductFilter): Product[] {
+  constructor(
+    productRepo: IProductRepository,
+    categoryRepo: ICategoryRepository,
+  ) {
+    this.productRepo = productRepo;
+    this.categoryRepo = categoryRepo;
+  }
+
+  getProducts(filter?: ProductFilter): Product[] | Promise<Product[]> {
     return this.productRepo.getAll(filter);
   }
 
-  getProductBySlug(slug: string): Product | null {
+  getProductBySlug(slug: string): Product | null | Promise<Product | null> {
     return this.productRepo.getBySlug(slug);
   }
 
-  getProductById(id: string): Product | null {
+  getProductById(id: string): Product | null | Promise<Product | null> {
     return this.productRepo.getById(id);
   }
 
-  getFeaturedProducts(limit?: number): Product[] {
+  getFeaturedProducts(limit?: number): Product[] | Promise<Product[]> {
     return this.productRepo.getFeatured(limit);
   }
 
-  getPopularProducts(limit?: number): Product[] {
+  getPopularProducts(limit?: number): Product[] | Promise<Product[]> {
     return this.productRepo.getPopular(limit);
   }
 
-  getCategoryName(categorySlug: string): string {
+  getCategoryName(categorySlug: string): string | Promise<string> {
     const cat = this.categoryRepo.getBySlug(categorySlug);
+    if (cat instanceof Promise) {
+      return cat.then((resolved) => resolved?.name ?? categorySlug);
+    }
     return cat?.name ?? categorySlug;
   }
 }

@@ -33,8 +33,7 @@ export class ReviewRepository implements IReviewRepository {
     return DEMO_REVIEWS.filter((r) => r.productId === productId);
   }
 
-  async add(review: Omit<Review, "_id" | "createdAt"> & { createdAt?: number }): Promise<string> {
-    const _review = review;
+  async add(_review: Omit<Review, "_id" | "createdAt"> & { createdAt?: number }): Promise<string> {
     return `review_${Date.now()}`;
   }
 }

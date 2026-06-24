@@ -3,17 +3,25 @@ import type { ICategoryRepository } from "@/core/domain/repositories";
 import type { Category } from "@/core/domain/entities";
 
 export class CategoryService implements ICategoryService {
-  constructor(private readonly categoryRepo: ICategoryRepository) {}
+  private categoryRepo: ICategoryRepository;
 
-  getAll(): Category[] {
+  constructor(categoryRepo: ICategoryRepository) {
+    this.categoryRepo = categoryRepo;
+  }
+
+  getAll(): Category[] | Promise<Category[]> {
     return this.categoryRepo.getAll();
   }
 
-  getBySlug(slug: string): Category | null {
+  getBySlug(slug: string): Category | null | Promise<Category | null> {
     return this.categoryRepo.getBySlug(slug);
   }
 
-  getCategoriesWithAll(): (Category & { isAll?: boolean })[] {
-    return [{ name: "Усі", slug: "", isAll: true } as Category & { isAll?: boolean }, ...this.getAll()];
+  getCategoriesWithAll(): (Category & { isAll?: boolean })[] | Promise<(Category & { isAll?: boolean })[]> {
+    const all = this.getAll();
+    if (all instanceof Promise) {
+      return all.then((resolved) => [{ name: "Усі", slug: "", isAll: true } as Category & { isAll?: boolean }, ...resolved]);
+    }
+    return [{ name: "Усі", slug: "", isAll: true } as Category & { isAll?: boolean }, ...all];
   }
 }

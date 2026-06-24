@@ -18,20 +18,17 @@ export interface IProductService {
   getProductById(id: string): Product | null | Promise<Product | null>;
   getFeaturedProducts(limit?: number): Product[] | Promise<Product[]>;
   getPopularProducts(limit?: number): Product[] | Promise<Product[]>;
-  getCategoryName(categorySlug: string): string;
+  getCategoryName(categorySlug: string): string | Promise<string>;
 }
 
 // ─── Category Service ──────────────────────────────────────────────────────
 
-import type { Category as CategoryEntity } from "./entities";
-
 export interface ICategoryService {
   getAll(): Category[] | Promise<Category[]>;
   getBySlug(slug: string): Category | null | Promise<Category | null>;
-  getCategoriesWithAll(): (Category & { isAll?: boolean })[];
+  getCategoriesWithAll(): (Category & { isAll?: boolean })[] | Promise<(Category & { isAll?: boolean })[]>;
 }
 
-export interface Category extends CategoryEntity {}
 export interface CategoryWithAll extends Category {
   isAll?: boolean;
 }

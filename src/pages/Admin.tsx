@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import {
   BarChart3,
   Package,
@@ -16,7 +16,6 @@ import {
   Edit3,
   Trash2,
   Search,
-  ChevronDown,
   LogOut,
   Flower2,
   LayoutDashboard,
@@ -225,7 +224,7 @@ function OrderStatusBadge({ status }: { status: string }) {
   );
 }
 
-function OrdersTab({ orders, loading, onRefresh }: { orders: any[]; loading: boolean; onRefresh: () => void }) {
+function OrdersTab({ orders, loading: _loading, onRefresh }: { orders: any[]; loading: boolean; onRefresh: () => void }) {
   const [statusFilter, setStatusFilter] = useState("");
   const filtered = statusFilter ? orders.filter((o) => o.status === statusFilter) : orders;
 
@@ -304,7 +303,7 @@ function OrdersTab({ orders, loading, onRefresh }: { orders: any[]; loading: boo
   );
 }
 
-function ProductsTab({ products, loading, onRefresh }: { products: any[]; loading: boolean; onRefresh: () => void }) {
+function ProductsTab({ products, loading: _loading, onRefresh: _onRefresh }: { products: any[]; loading: boolean; onRefresh: () => void }) {
   const [search, setSearch] = useState("");
   const filtered = search
     ? products.filter((p) => p.name?.toLowerCase().includes(search.toLowerCase()))
@@ -363,7 +362,7 @@ function ProductsTab({ products, loading, onRefresh }: { products: any[]; loadin
   );
 }
 
-function CategoriesTab({ categories, loading, onRefresh }: { categories: any[]; loading: boolean; onRefresh: () => void }) {
+function CategoriesTab({ categories, loading: _loading }: { categories: any[]; loading: boolean; onRefresh: () => void }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div className="flex items-center justify-between mb-8">
@@ -373,9 +372,7 @@ function CategoriesTab({ categories, loading, onRefresh }: { categories: any[]; 
         </Button>
       </div>
 
-      {loading ? (
-        <p className="text-stone-400">Завантаження...</p>
-      ) : (
+      {_loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {categories.map((cat: any) => (
             <Card key={cat.id} className="hover:shadow-md transition-shadow">

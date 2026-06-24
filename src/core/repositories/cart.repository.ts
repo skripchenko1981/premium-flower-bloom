@@ -21,7 +21,7 @@ export class CartRepository implements ICartRepository {
     }));
   }
 
-  async addItem(item: Omit<CartItem, "_id">): Promise<string> {
+  async addItem(_item: Omit<CartItem, "_id">): Promise<string> {
     // In real usage, this delegates to a Convex mutation.
     // For now return a mock id.
     return `cart_${Date.now()}`;

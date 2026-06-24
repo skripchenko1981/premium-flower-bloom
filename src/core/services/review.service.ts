@@ -3,19 +3,22 @@ import type { IReviewRepository } from "@/core/domain/repositories";
 import type { Review } from "@/core/domain/entities";
 
 export class ReviewService implements IReviewService {
-  constructor(private readonly reviewRepo: IReviewRepository) {}
+  private reviewRepo: IReviewRepository;
 
-  getByProduct(productId: string): Review[] {
+  constructor(reviewRepo: IReviewRepository) {
+    this.reviewRepo = reviewRepo;
+  }
+
+  getByProduct(productId: string): Review[] | Promise<Review[]> {
     return this.reviewRepo.getByProduct(productId);
   }
 
-  addReview(productId: string, rating: number, text: string, userName?: string): string {
+  addReview(productId: string, rating: number, text: string, userName?: string): string | Promise<string> {
     return this.reviewRepo.add({
       productId,
       rating,
       text,
       userName: userName ?? "Anonymous",
-      userId: undefined,
     });
   }
 }

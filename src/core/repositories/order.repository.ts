@@ -14,9 +14,8 @@ export class OrderRepository implements IOrderRepository {
     return null;
   }
 
-  async create(order: Omit<Order, "_id" | "createdAt"> & { createdAt?: number }): Promise<string> {
+  async create(_order: Omit<Order, "_id" | "createdAt"> & { createdAt?: number }): Promise<string> {
     // In production, delegates to Convex mutation
-    const _order = order;
     return `order_${Date.now()}`;
   }
 

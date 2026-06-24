@@ -1,6 +1,5 @@
 import type { ICategoryRepository } from "@/core/domain/repositories";
 import type { Category } from "@/core/domain/entities";
-import { api } from "@/convex/_generated/api";
 import { categories as demoCategories, getCategoryBySlug } from "@/lib/data/categories";
 
 /**

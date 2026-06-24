@@ -20,8 +20,9 @@ import {
   Check,
   Loader2,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+
 import { Layout } from "@/components/Layout";
+import { cn } from "@/lib/utils";
 import { demoCartItems } from "@/lib/data/products";
 
 export default function Cart() {
@@ -31,7 +32,7 @@ export default function Cart() {
   const [promoDiscount, setPromoDiscount] = useState(0);
   const [promoLoading, setPromoLoading] = useState(false);
   const [promoError, setPromoError] = useState("");
-  const [useLocalData, setUseLocalData] = useState(true);
+  const [useLocalData] = useState(true);
 
   const cartItems = useQuery(api.shop.getCartItems);
   const updateQuantity = useMutation(api.shop.updateCartItemQuantity);

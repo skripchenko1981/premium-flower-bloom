@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -64,7 +64,7 @@ export default function Checkout() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const createOrder = useMutation(api.shop.createOrder);
+  const _createOrder = useMutation(api.shop.createOrder);
 
   const selectedDelivery = deliveryMethods.find((d) => d.id === deliveryMethod)!;
 
