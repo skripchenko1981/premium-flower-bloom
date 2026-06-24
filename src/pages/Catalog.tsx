@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
-  Search,
   SlidersHorizontal,
   X,
   ShoppingCart,
@@ -40,11 +39,11 @@ export default function Catalog() {
 
   // Try real data first
   const backendProducts = useQuery(api.shop.getProducts, {
-    category: activeCategory || undefined,
-    search: search || undefined,
-    minPrice: priceRange[0] > 0 ? priceRange[0] : undefined,
-    maxPrice: priceRange[1] < 5000 ? priceRange[1] : undefined,
-    sortBy: sortBy || undefined,
+    ...(activeCategory ? { category: activeCategory } : {}),
+    ...(search ? { search } : {}),
+    ...(priceRange[0] > 0 ? { minPrice: priceRange[0] } : {}),
+    ...(priceRange[1] < 5000 ? { maxPrice: priceRange[1] } : {}),
+    ...(sortBy ? { sortBy } : {}),
   });
 
   const products = backendProducts && backendProducts.length > 0 ? backendProducts : demoProducts;

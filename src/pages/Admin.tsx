@@ -134,7 +134,7 @@ export default function Admin() {
   );
 }
 
-function DashboardTab({ stats, loading }: { stats: DashboardStats | null; loading: boolean }) {
+function DashboardTab({ stats }: { stats: DashboardStats | null; loading?: boolean }) {
   const cards = [
     { label: "Усього товарів", value: stats?.total_products ?? 0, icon: Package, color: "bg-blue-50 text-blue-500" },
     { label: "Замовлень", value: stats?.total_orders ?? 0, icon: ShoppingCart, color: "bg-rose-50 text-rose-500" },
@@ -250,7 +250,7 @@ function OrdersTab({ orders, loading: _loading, onRefresh }: { orders: any[]; lo
         </div>
       </div>
 
-      {loading ? (
+      {_loading ? (
         <p className="text-stone-400">Завантаження...</p>
       ) : filtered.length === 0 ? (
         <p className="text-stone-400">Замовлень не знайдено</p>
@@ -329,7 +329,7 @@ function ProductsTab({ products, loading: _loading, onRefresh: _onRefresh }: { p
         </div>
       </div>
 
-      {loading ? (
+      {_loading ? (
         <p className="text-stone-400">Завантаження...</p>
       ) : filtered.length === 0 ? (
         <p className="text-stone-400">Товарів не знайдено</p>
@@ -362,7 +362,7 @@ function ProductsTab({ products, loading: _loading, onRefresh: _onRefresh }: { p
   );
 }
 
-function CategoriesTab({ categories, loading: _loading }: { categories: any[]; loading: boolean; onRefresh: () => void }) {
+function CategoriesTab({ categories, loading: _loading }: { categories: any[]; loading?: boolean; onRefresh: () => void }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div className="flex items-center justify-between mb-8">
@@ -373,6 +373,8 @@ function CategoriesTab({ categories, loading: _loading }: { categories: any[]; l
       </div>
 
       {_loading ? (
+        <p className="text-stone-400">Завантаження...</p>
+      ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {categories.map((cat: any) => (
             <Card key={cat.id} className="hover:shadow-md transition-shadow">
