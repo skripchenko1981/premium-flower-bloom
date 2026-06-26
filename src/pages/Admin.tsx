@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { motion } from "framer-motion";
+import { useMutation, useQuery } from "convex/react";
+import { api as convexApi } from "@/convex/_generated/api";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -21,8 +23,11 @@ import {
   LayoutDashboard,
   Star,
   MessageCircle,
+  ShieldCheck,
+  Loader2,
 } from "lucide-react";
 import api from "@/lib/api";
+import { clearAdminSession, getAdminToken } from "@/pages/AdminLogin";
 
 interface DashboardStats {
   total_products: number;
@@ -42,10 +47,36 @@ export default function Admin() {
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [adminUsername, setAdminUsername] = useState<string | null>(null);
+
+  // Check admin session on mount. If no token OR an invalid/expired session,
+  // redirect to /admin-login so the admin shell is never shown to non-admins.
+  const [token] = useState(() => getAdminToken());
+  const session = useQuery(
+    convexApi.adminAuth.verifyAdminSession,
+    token ? { token } : "skip",
+  );
+
+  const logout = useMutation(convexApi.adminAuth.adminLogout);
 
   useEffect(() => {
+    const noSession = !token || session === null;
+    if (noSession) {
+      clearAdminSession();
+      navigate("/admin-login", { replace: true, state: { from: "/admin" } });
+      return;
+    }
+    if (session) {
+      setAdminUsername(session.username);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session, token]);
+
+  useEffect(() => {
+    if (!session) return;
     loadData();
-  }, [activeTab]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, session]);
 
   const loadData = async () => {
     setLoading(true);
@@ -70,9 +101,27 @@ export default function Admin() {
   };
 
   const handleLogout = async () => {
-    await api.logout();
-    navigate("/");
+    const t = getAdminToken();
+    if (t) {
+      try {
+        await logout({ token: t });
+      } catch (e) {
+        console.error("Admin logout failed:", e);
+      }
+    }
+    clearAdminSession();
+    navigate("/admin-login");
   };
+
+  // Avoid flashing the admin shell while we verify the session or while a
+  // redirect to /admin-login is pending. The effect handles the navigation.
+  if (!session) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-stone-50">
+        <Loader2 className="w-6 h-6 animate-spin text-rose-400" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-stone-50 flex">
@@ -85,6 +134,14 @@ export default function Admin() {
               Flower <span className="text-rose-400">Admin</span>
             </span>
           </div>
+          {adminUsername && (
+            <div className="mt-3 flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-stone-50 border border-stone-100">
+              <ShieldCheck className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+              <span className="text-xs text-stone-500 truncate">
+                {adminUsername}
+              </span>
+            </div>
+          )}
         </div>
         <nav className="flex-1 p-3 space-y-1">
           {[

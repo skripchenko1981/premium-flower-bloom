@@ -150,6 +150,13 @@ const schema = defineSchema(
       active: v.boolean(),
       expiresAt: v.optional(v.number()),
     }).index("by_code", ["code"]),
+
+    // Admin sessions (credentials live in env: ADMIN_USERNAME / ADMIN_PASSWORD)
+    adminSessions: defineTable({
+      token: v.string(),
+      username: v.string(),
+      expiresAt: v.number(),
+    }).index("by_token", ["token"]),
   },
   {
     schemaValidation: false,

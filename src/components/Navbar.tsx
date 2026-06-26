@@ -14,6 +14,7 @@ import {
   ChevronDown,
   LogOut,
   Package,
+  ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useQuery } from "convex/react";
@@ -200,6 +201,16 @@ export default function Navbar() {
                 )}
               </Link>
 
+              {/* Admin login */}
+              <Link
+                to="/admin-login"
+                className="relative p-2.5 rounded-full text-stone-400 hover:text-rose-500 hover:bg-rose-50 transition-all duration-200"
+                title="Вхід до адмінпанелі"
+                aria-label="Вхід до адмінпанелі"
+              >
+                <ShieldCheck className="w-5 h-5" />
+              </Link>
+
               {/* Auth */}
               {!isLoading &&
                 (isAuthenticated ? (
@@ -305,6 +316,12 @@ export default function Navbar() {
                 )
               )}
               <hr className="my-2 border-stone-100" />
+              <Link
+                to="/admin-login"
+                className="flex items-center gap-2 px-3 py-3 rounded-lg text-base font-medium text-stone-500 hover:text-rose-500 hover:bg-rose-50/50"
+              >
+                <ShieldCheck className="w-4 h-4" /> Адмінпанель
+              </Link>
               {!isLoading && !isAuthenticated && (
                 <Link
                   to="/auth"
