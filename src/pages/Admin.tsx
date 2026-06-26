@@ -25,28 +25,35 @@ import {
   MessageCircle,
   ShieldCheck,
   Loader2,
+  CheckCircle2,
+  AlertCircle,
 } from "lucide-react";
-import api from "@/lib/api";
 import { clearAdminSession, getAdminToken } from "@/pages/AdminLogin";
 
-interface DashboardStats {
-  total_products: number;
-  total_categories: number;
-  total_orders: number;
-  total_users: number;
-  total_revenue: number;
-  pending_orders: number;
-  recent_orders: any[];
-}
+const STATUS_FILTERS = [
+  { value: "", label: "Усі статуси" },
+  { value: "pending", label: "Очікують" },
+  { value: "confirmed", label: "Підтверджені" },
+  { value: "processing", label: "В обробці" },
+  { value: "shipped", label: "Відправлені" },
+  { value: "delivered", label: "Доставлені" },
+  { value: "cancelled", label: "Скасовані" },
+];
+
+const TABS = [
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "orders", label: "Замовлення", icon: ShoppingCart },
+  { id: "products", label: "Товари", icon: Package },
+  { id: "categories", label: "Категорії", icon: BarChart3 },
+  { id: "reviews", label: "Відгуки", icon: Star },
+  { id: "messages", label: "Повідомлення", icon: MessageCircle },
+] as const;
+
+type TabId = (typeof TABS)[number]["id"];
 
 export default function Admin() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("dashboard");
-  const [stats, setStats] = useState<DashboardStats | null>(null);
-  const [orders, setOrders] = useState<any[]>([]);
-  const [products, setProducts] = useState<any[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<TabId>("dashboard");
   const [adminUsername, setAdminUsername] = useState<string | null>(null);
 
   // Check admin session on mount. If no token OR an invalid/expired session,
@@ -71,34 +78,6 @@ export default function Admin() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session, token]);
-
-  useEffect(() => {
-    if (!session) return;
-    loadData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab, session]);
-
-  const loadData = async () => {
-    setLoading(true);
-    try {
-      if (activeTab === "dashboard") {
-        const s = await api.getDashboardStats();
-        setStats(s);
-      } else if (activeTab === "orders") {
-        const o = await api.getAdminOrders(1, 50);
-        setOrders(o.orders);
-      } else if (activeTab === "products") {
-        const p = await api.getProducts({ size: 50 });
-        setProducts(p.products);
-      } else if (activeTab === "categories") {
-        const c = await api.getAdminCategories();
-        setCategories(c);
-      }
-    } catch (e) {
-      console.error("Failed to load admin data:", e);
-    }
-    setLoading(false);
-  };
 
   const handleLogout = async () => {
     const t = getAdminToken();
@@ -144,14 +123,7 @@ export default function Admin() {
           )}
         </div>
         <nav className="flex-1 p-3 space-y-1">
-          {[
-            { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-            { id: "orders", label: "Замовлення", icon: ShoppingCart },
-            { id: "products", label: "Товари", icon: Package },
-            { id: "categories", label: "Категорії", icon: BarChart3 },
-            { id: "reviews", label: "Відгуки", icon: Star },
-            { id: "messages", label: "Повідомлення", icon: MessageCircle },
-          ].map((tab) => (
+          {TABS.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
@@ -179,24 +151,32 @@ export default function Admin() {
       {/* Main Content */}
       <main className="flex-1 overflow-auto">
         <div className="p-6 sm:p-8">
-          {activeTab === "dashboard" && <DashboardTab stats={stats} loading={loading} />}
-          {activeTab === "orders" && <OrdersTab orders={orders} loading={loading} onRefresh={loadData} />}
-          {activeTab === "products" && <ProductsTab products={products} loading={loading} onRefresh={loadData} />}
-          {activeTab === "categories" && <CategoriesTab categories={categories} loading={loading} onRefresh={loadData} />}
+          {activeTab === "dashboard" && <DashboardTab token={token!} />}
+          {activeTab === "orders" && <OrdersTab token={token!} />}
+          {activeTab === "products" && <ProductsTab token={token!} />}
+          {activeTab === "categories" && <CategoriesTab token={token!} />}
           {activeTab === "reviews" && <ReviewsTab />}
-          {activeTab === "messages" && <MessagesTab />}
+          {activeTab === "messages" && <MessagesTab token={token!} />}
         </div>
       </main>
     </div>
   );
 }
 
-function DashboardTab({ stats }: { stats: DashboardStats | null; loading?: boolean }) {
+// ─────────────────────────── Dashboard ───────────────────────────
+
+function DashboardTab({ token }: { token: string }) {
+  const stats = useQuery(convexApi.adminData.getDashboardStats, { token });
+
+  if (!stats) {
+    return <TabLoading />;
+  }
+
   const cards = [
-    { label: "Усього товарів", value: stats?.total_products ?? 0, icon: Package, color: "bg-blue-50 text-blue-500" },
-    { label: "Замовлень", value: stats?.total_orders ?? 0, icon: ShoppingCart, color: "bg-rose-50 text-rose-500" },
-    { label: "Користувачів", value: stats?.total_users ?? 0, icon: Users, color: "bg-green-50 text-green-500" },
-    { label: "Очікують", value: stats?.pending_orders ?? 0, icon: TrendingUp, color: "bg-amber-50 text-amber-500" },
+    { label: "Усього товарів", value: stats.total_products, icon: Package, color: "bg-blue-50 text-blue-500" },
+    { label: "Замовлень", value: stats.total_orders, icon: ShoppingCart, color: "bg-rose-50 text-rose-500" },
+    { label: "Користувачів", value: stats.total_users, icon: Users, color: "bg-green-50 text-green-500" },
+    { label: "Очікують", value: stats.pending_orders, icon: TrendingUp, color: "bg-amber-50 text-amber-500" },
   ];
 
   return (
@@ -229,9 +209,9 @@ function DashboardTab({ stats }: { stats: DashboardStats | null; loading?: boole
             <CardTitle className="text-lg font-medium text-stone-800">Останні замовлення</CardTitle>
           </CardHeader>
           <CardContent>
-            {stats?.recent_orders?.length ? (
+            {stats.recent_orders?.length ? (
               <div className="space-y-3">
-                {stats.recent_orders.map((order: any) => (
+                {stats.recent_orders.map((order) => (
                   <div key={order.id} className="flex items-center justify-between py-2 border-b border-stone-50 last:border-0">
                     <div>
                       <span className="text-sm font-medium text-stone-700">#{order.order_number}</span>
@@ -252,8 +232,12 @@ function DashboardTab({ stats }: { stats: DashboardStats | null; loading?: boole
             <CardTitle className="text-lg font-medium text-stone-800">Дохід</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-4xl font-medium text-stone-800">₴{stats?.total_revenue?.toLocaleString() ?? 0}</p>
-            <p className="text-sm text-stone-400 mt-1">Загальний дохід від замовлень</p>
+            <p className="text-4xl font-medium text-stone-800">
+              ₴{stats.total_revenue.toLocaleString()}
+            </p>
+            <p className="text-sm text-stone-400 mt-1">
+              Загальний дохід (без скасованих)
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -261,55 +245,43 @@ function DashboardTab({ stats }: { stats: DashboardStats | null; loading?: boole
   );
 }
 
-function OrderStatusBadge({ status }: { status: string }) {
-  const colors: Record<string, string> = {
-    pending: "bg-amber-50 text-amber-600 border-amber-200",
-    confirmed: "bg-blue-50 text-blue-600 border-blue-200",
-    processing: "bg-purple-50 text-purple-600 border-purple-200",
-    shipped: "bg-cyan-50 text-cyan-600 border-cyan-200",
-    delivered: "bg-green-50 text-green-600 border-green-200",
-    cancelled: "bg-red-50 text-red-600 border-red-200",
-  };
-  const labels: Record<string, string> = {
-    pending: "Очікує", confirmed: "Підтверджено", processing: "В обробці",
-    shipped: "Відправлено", delivered: "Доставлено", cancelled: "Скасовано",
-  };
-  return (
-    <Badge className={`${colors[status] || "bg-stone-50 text-stone-600"} border`} variant="outline">
-      {labels[status] || status}
-    </Badge>
-  );
-}
+// ─────────────────────────── Orders ───────────────────────────
 
-function OrdersTab({ orders, loading: _loading, onRefresh }: { orders: any[]; loading: boolean; onRefresh: () => void }) {
+function OrdersTab({ token }: { token: string }) {
   const [statusFilter, setStatusFilter] = useState("");
+  const orders = useQuery(convexApi.adminData.adminGetAllOrders, { token });
+  const updateStatus = useMutation(convexApi.adminData.adminUpdateOrderStatus);
+
+  if (!orders) return <TabLoading />;
+
   const filtered = statusFilter ? orders.filter((o) => o.status === statusFilter) : orders;
+
+  const handleStatusChange = async (orderId: string, status: string) => {
+    try {
+      await updateStatus({ token, orderId: orderId as any, status });
+    } catch (e) {
+      console.error("Failed to update order status:", e);
+    }
+  };
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-2xl sm:text-3xl font-light text-stone-900 font-serif tracking-tight">Замовлення</h1>
-        <div className="flex gap-2">
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="text-sm border border-stone-200 rounded-xl px-3 py-2 bg-white"
-          >
-            <option value="">Усі статуси</option>
-            <option value="pending">Очікують</option>
-            <option value="confirmed">Підтверджені</option>
-            <option value="processing">В обробці</option>
-            <option value="shipped">Відправлені</option>
-            <option value="delivered">Доставлені</option>
-            <option value="cancelled">Скасовані</option>
-          </select>
-          <Button variant="outline" onClick={onRefresh} className="rounded-xl">Оновити</Button>
-        </div>
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="text-sm border border-stone-200 rounded-xl px-3 py-2 bg-white"
+        >
+          {STATUS_FILTERS.map((s) => (
+            <option key={s.value} value={s.value}>
+              {s.label}
+            </option>
+          ))}
+        </select>
       </div>
 
-      {_loading ? (
-        <p className="text-stone-400">Завантаження...</p>
-      ) : filtered.length === 0 ? (
+      {filtered.length === 0 ? (
         <p className="text-stone-400">Замовлень не знайдено</p>
       ) : (
         <div className="bg-white rounded-2xl border border-stone-100 overflow-hidden">
@@ -325,22 +297,34 @@ function OrdersTab({ orders, loading: _loading, onRefresh }: { orders: any[]; lo
               </tr>
             </thead>
             <tbody>
-              {filtered.map((order: any) => (
-                <tr key={order.id} className="border-b border-stone-50 hover:bg-stone-50/50 transition-colors">
-                  <td className="p-4 font-medium text-stone-700">#{order.order_number || order.id}</td>
-                  <td className="p-4 text-stone-600">ID: {order.user_id || "Гість"}</td>
-                  <td className="p-4 font-medium text-stone-700">₴{order.total_amount}</td>
+              {filtered.map((order) => (
+                <tr key={order._id} className="border-b border-stone-50 hover:bg-stone-50/50 transition-colors">
+                  <td className="p-4 font-medium text-stone-700">
+                    #{String(order._id).slice(-6).toUpperCase()}
+                  </td>
+                  <td className="p-4 text-stone-600">
+                    {order.recipientName || "—"}
+                  </td>
+                  <td className="p-4 font-medium text-stone-700">₴{order.total}</td>
                   <td className="p-4"><OrderStatusBadge status={order.status} /></td>
                   <td className="p-4 text-stone-400 text-xs">
-                    {order.created_at ? new Date(order.created_at).toLocaleDateString("uk-UA") : "-"}
+                    {new Date(order.createdAt ?? order._creationTime).toLocaleString("uk-UA", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </td>
                   <td className="p-4">
                     <select
-                      onChange={async (e) => {
-                        await api.updateOrderStatus(order.id, e.target.value);
-                        onRefresh();
+                      defaultValue=""
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        if (v) handleStatusChange(order._id, v);
+                        e.currentTarget.value = "";
                       }}
-                      className="text-xs border border-stone-200 rounded-lg px-2 py-1"
+                      className="text-xs border border-stone-200 rounded-lg px-2 py-1 bg-white"
                     >
                       <option value="">Змінити статус</option>
                       <option value="confirmed">Підтвердити</option>
@@ -360,8 +344,14 @@ function OrdersTab({ orders, loading: _loading, onRefresh }: { orders: any[]; lo
   );
 }
 
-function ProductsTab({ products, loading: _loading, onRefresh: _onRefresh }: { products: any[]; loading: boolean; onRefresh: () => void }) {
+// ─────────────────────────── Products ───────────────────────────
+
+function ProductsTab({ token }: { token: string }) {
   const [search, setSearch] = useState("");
+  const products = useQuery(convexApi.adminData.adminGetAllProducts, { token });
+
+  if (!products) return <TabLoading />;
+
   const filtered = search
     ? products.filter((p) => p.name?.toLowerCase().includes(search.toLowerCase()))
     : products;
@@ -380,74 +370,99 @@ function ProductsTab({ products, loading: _loading, onRefresh: _onRefresh }: { p
               className="pl-9 h-10 w-48 rounded-xl"
             />
           </div>
-          <Button className="bg-rose-400 hover:bg-rose-500 text-white rounded-xl">
+          <Button
+            disabled
+            className="bg-rose-400 hover:bg-rose-500 text-white rounded-xl disabled:opacity-60"
+            title="Скоро: додавання товарів"
+          >
             <Plus className="w-4 h-4 mr-1.5" /> Додати
           </Button>
         </div>
       </div>
 
-      {_loading ? (
-        <p className="text-stone-400">Завантаження...</p>
-      ) : filtered.length === 0 ? (
-        <p className="text-stone-400">Товарів не знайдено</p>
+      {filtered.length === 0 ? (
+        <p className="text-stone-400">
+          {search ? "Товарів за пошуком не знайдено" : "Товарів ще немає"}
+        </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {filtered.map((product: any) => (
-            <Card key={product.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-4">
-                {product.images?.[0] && (
-                  <img
-                    src={product.images[0].url || product.images[0]}
-                    alt={product.name}
-                    className="w-full aspect-square object-cover rounded-xl mb-3"
-                  />
-                )}
-                <h3 className="font-medium text-stone-800 text-sm">{product.name}</h3>
-                <p className="text-lg font-medium text-stone-800 mt-1">₴{product.price}</p>
-                <div className="flex items-center gap-2 mt-2">
-                  <Badge className={product.is_active ? "bg-green-50 text-green-600" : "bg-red-50 text-red-600"}>
-                    {product.is_active ? "Активний" : "Неактивний"}
-                  </Badge>
-                  <span className="text-xs text-stone-400">Stock: {product.stock}</span>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          {filtered.map((product) => {
+            const image = Array.isArray(product.images) ? product.images[0] : null;
+            return (
+              <Card key={product._id} className="hover:shadow-md transition-shadow">
+                <CardContent className="p-4">
+                  {image && (
+                    <img
+                      src={typeof image === "string" ? image : image.url}
+                      alt={product.name}
+                      className="w-full aspect-square object-cover rounded-xl mb-3"
+                    />
+                  )}
+                  <h3 className="font-medium text-stone-800 text-sm line-clamp-2">{product.name}</h3>
+                  <p className="text-lg font-medium text-stone-800 mt-1">₴{product.price}</p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <Badge className={product.inStock ? "bg-green-50 text-green-600" : "bg-red-50 text-red-600"}>
+                      {product.inStock ? "В наявності" : "Немає"}
+                    </Badge>
+                    <span className="text-xs text-stone-400">{product.category}</span>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
     </motion.div>
   );
 }
 
-function CategoriesTab({ categories, loading: _loading }: { categories: any[]; loading?: boolean; onRefresh: () => void }) {
+// ─────────────────────────── Categories ───────────────────────────
+
+function CategoriesTab({ token }: { token: string }) {
+  const categories = useQuery(convexApi.adminData.adminGetAllCategories, { token });
+
+  if (!categories) return <TabLoading />;
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-2xl sm:text-3xl font-light text-stone-900 font-serif tracking-tight">Категорії</h1>
-        <Button className="bg-rose-400 hover:bg-rose-500 text-white rounded-xl">
+        <Button
+          disabled
+          variant="outline"
+          className="rounded-xl disabled:opacity-60"
+          title="Скоро: додавання категорій"
+        >
           <Plus className="w-4 h-4 mr-1.5" /> Додати
         </Button>
       </div>
 
-      {_loading ? (
-        <p className="text-stone-400">Завантаження...</p>
+      {categories.length === 0 ? (
+        <p className="text-stone-400">Категорій ще немає</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {categories.map((cat: any) => (
-            <Card key={cat.id} className="hover:shadow-md transition-shadow">
-              <CardContent className="p-5 flex items-center justify-between">
-                <div>
-                  <h3 className="font-medium text-stone-800">{cat.name}</h3>
-                  <p className="text-xs text-stone-400 mt-0.5">slug: {cat.slug}</p>
-                  <Badge className={cat.is_active ? "bg-green-50 text-green-600 mt-2" : "bg-red-50 text-red-600 mt-2"}>
-                    {cat.is_active ? "Активна" : "Неактивна"}
-                  </Badge>
+          {categories.map((cat) => (
+            <Card key={cat._id} className="hover:shadow-md transition-shadow">
+              <CardContent className="p-5 flex items-center justify-between gap-4">
+                {cat.image && (
+                  <img
+                    src={cat.image}
+                    alt={cat.name}
+                    className="w-16 h-16 object-cover rounded-xl shrink-0"
+                  />
+                )}
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-medium text-stone-800 truncate">{cat.name}</h3>
+                  <p className="text-xs text-stone-400 mt-0.5 truncate">slug: {cat.slug}</p>
+                  {cat.description && (
+                    <p className="text-xs text-stone-500 mt-1.5 line-clamp-2">{cat.description}</p>
+                  )}
                 </div>
-                <div className="flex gap-1">
-                  <Button size="icon" variant="ghost" className="h-8 w-8">
+                <div className="flex gap-1 shrink-0">
+                  <Button size="icon" variant="ghost" className="h-8 w-8" disabled title="Скоро">
                     <Edit3 className="w-3.5 h-3.5 text-stone-400" />
                   </Button>
-                  <Button size="icon" variant="ghost" className="h-8 w-8">
+                  <Button size="icon" variant="ghost" className="h-8 w-8" disabled title="Скоро">
                     <Trash2 className="w-3.5 h-3.5 text-red-400" />
                   </Button>
                 </div>
@@ -460,6 +475,8 @@ function CategoriesTab({ categories, loading: _loading }: { categories: any[]; l
   );
 }
 
+// ─────────────────────────── Reviews ───────────────────────────
+
 function ReviewsTab() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -467,23 +484,138 @@ function ReviewsTab() {
       <Card>
         <CardContent className="p-8 text-center">
           <Star className="w-12 h-12 text-stone-300 mx-auto mb-3" />
-          <p className="text-stone-400">Підключіть бекенд для управління відгуками</p>
+          <p className="text-stone-400">Модерація відгуків незабаром</p>
         </CardContent>
       </Card>
     </motion.div>
   );
 }
 
-function MessagesTab() {
+// ─────────────────────────── Messages ───────────────────────────
+
+function MessagesTab({ token }: { token: string }) {
+  const messages = useQuery(convexApi.adminData.adminGetContactMessages, { token });
+  const markRead = useMutation(convexApi.adminData.adminMarkContactRead);
+
+  if (!messages) return <TabLoading />;
+
+  const toggleRead = async (id: string, read: boolean) => {
+    try {
+      await markRead({ token, messageId: id as any, read });
+    } catch (e) {
+      console.error("Failed to mark message:", e);
+    }
+  };
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-      <h1 className="text-2xl sm:text-3xl font-light text-stone-900 font-serif tracking-tight mb-8">Повідомлення</h1>
-      <Card>
-        <CardContent className="p-8 text-center">
-          <MessageCircle className="w-12 h-12 text-stone-300 mx-auto mb-3" />
-          <p className="text-stone-400">Підключіть бекенд для перегляду повідомлень</p>
-        </CardContent>
-      </Card>
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-2xl sm:text-3xl font-light text-stone-900 font-serif tracking-tight">Повідомлення</h1>
+        <span className="text-sm text-stone-500">
+          {messages.filter((m) => !m.read).length} непрочитаних
+        </span>
+      </div>
+
+      {messages.length === 0 ? (
+        <Card>
+          <CardContent className="p-8 text-center">
+            <MessageCircle className="w-12 h-12 text-stone-300 mx-auto mb-3" />
+            <p className="text-stone-400">Повідомлень ще немає</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-3">
+          {messages.map((msg) => (
+            <Card
+              key={msg._id}
+              className={`hover:shadow-md transition-shadow ${!msg.read ? "border-rose-200" : ""}`}
+            >
+              <CardContent className="p-5">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="font-medium text-stone-800">{msg.name}</h3>
+                      {!msg.read && (
+                        <Badge className="bg-rose-50 text-rose-600 border-rose-200">
+                          нове
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="text-xs text-stone-500 mt-1 flex flex-wrap gap-x-3 gap-y-0.5">
+                      <a href={`mailto:${msg.email}`} className="hover:text-rose-500">
+                        {msg.email}
+                      </a>
+                      {msg.phone && <span>{msg.phone}</span>}
+                      <span className="text-stone-400">
+                        {new Date(msg.createdAt).toLocaleString("uk-UA", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                    </div>
+                    <p className="text-sm text-stone-700 mt-3 whitespace-pre-wrap">{msg.message}</p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="rounded-xl shrink-0"
+                    onClick={() => toggleRead(msg._id, !msg.read)}
+                  >
+                    {msg.read ? (
+                      <>
+                        <AlertCircle className="w-3.5 h-3.5 mr-1.5" />
+                        Не прочитано
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />
+                        Прочитано
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </motion.div>
+  );
+}
+
+// ─────────────────────────── Shared bits ───────────────────────────
+
+function OrderStatusBadge({ status }: { status: string }) {
+  const colors: Record<string, string> = {
+    pending: "bg-amber-50 text-amber-600 border-amber-200",
+    confirmed: "bg-blue-50 text-blue-600 border-blue-200",
+    processing: "bg-purple-50 text-purple-600 border-purple-200",
+    shipped: "bg-cyan-50 text-cyan-600 border-cyan-200",
+    delivered: "bg-green-50 text-green-600 border-green-200",
+    cancelled: "bg-red-50 text-red-600 border-red-200",
+  };
+  const labels: Record<string, string> = {
+    pending: "Очікує",
+    confirmed: "Підтверджено",
+    processing: "В обробці",
+    shipped: "Відправлено",
+    delivered: "Доставлено",
+    cancelled: "Скасовано",
+  };
+  return (
+    <Badge className={`${colors[status] || "bg-stone-50 text-stone-600"} border`} variant="outline">
+      {labels[status] || status}
+    </Badge>
+  );
+}
+
+function TabLoading() {
+  return (
+    <div className="flex items-center justify-center py-20">
+      <Loader2 className="w-6 h-6 animate-spin text-rose-400" />
+    </div>
   );
 }
