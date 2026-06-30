@@ -165,3 +165,88 @@ export const adminMarkContactRead = mutation({
     return { ok: true };
   },
 });
+
+// ───────────────────────── Product CRUD ─────────────────────────
+
+const productFields = {
+  name: v.string(),
+  slug: v.string(),
+  description: v.string(),
+  price: v.number(),
+  oldPrice: v.optional(v.number()),
+  category: v.string(),
+  images: v.array(v.string()),
+  inStock: v.boolean(),
+  featured: v.optional(v.boolean()),
+  popular: v.optional(v.boolean()),
+  tags: v.optional(v.array(v.string())),
+  careTips: v.optional(v.string()),
+};
+
+export const adminCreateProduct = mutation({
+  args: { token: v.string(), ...productFields },
+  handler: async (ctx, args) => {
+    await requireAdminSession(ctx, args.token);
+    const { token: _t, ...data } = args;
+    const id = await ctx.db.insert("products", { ...data, createdAt: Date.now() });
+    return { id };
+  },
+});
+
+export const adminUpdateProduct = mutation({
+  args: { token: v.string(), id: v.id("products"), ...productFields },
+  handler: async (ctx, args) => {
+    await requireAdminSession(ctx, args.token);
+    const { token: _t, id, ...data } = args;
+    await ctx.db.patch(id, data);
+    return { ok: true };
+  },
+});
+
+export const adminDeleteProduct = mutation({
+  args: { token: v.string(), id: v.id("products") },
+  handler: async (ctx, args) => {
+    await requireAdminSession(ctx, args.token);
+    await ctx.db.delete(args.id);
+    return { ok: true };
+  },
+});
+
+// ───────────────────────── Category CRUD ─────────────────────────
+
+const categoryFields = {
+  name: v.string(),
+  slug: v.string(),
+  description: v.optional(v.string()),
+  image: v.optional(v.string()),
+  order: v.optional(v.number()),
+};
+
+export const adminCreateCategory = mutation({
+  args: { token: v.string(), ...categoryFields },
+  handler: async (ctx, args) => {
+    await requireAdminSession(ctx, args.token);
+    const { token: _t, ...data } = args;
+    const id = await ctx.db.insert("categories", data);
+    return { id };
+  },
+});
+
+export const adminUpdateCategory = mutation({
+  args: { token: v.string(), id: v.id("categories"), ...categoryFields },
+  handler: async (ctx, args) => {
+    await requireAdminSession(ctx, args.token);
+    const { token: _t, id, ...data } = args;
+    await ctx.db.patch(id, data);
+    return { ok: true };
+  },
+});
+
+export const adminDeleteCategory = mutation({
+  args: { token: v.string(), id: v.id("categories") },
+  handler: async (ctx, args) => {
+    await requireAdminSession(ctx, args.token);
+    await ctx.db.delete(args.id);
+    return { ok: true };
+  },
+});
