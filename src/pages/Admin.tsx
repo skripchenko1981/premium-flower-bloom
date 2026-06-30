@@ -212,7 +212,7 @@ function DashboardTab({ token }: { token: string }) {
           <CardContent>
             {stats.recent_orders?.length ? (
               <div className="space-y-3">
-                {stats.recent_orders.map((order: { id: string; order_number: string; total_amount: number | undefined; status: string | undefined; created_at: number }) => (
+                {stats.recent_orders.map((order: { id: string; order_number: string; total_amount: number; status: string; created_at: number }) => (
                   <div key={order.id} className="flex items-center justify-between py-2 border-b border-stone-50 last:border-0">
                     <div>
                       <span className="text-sm font-medium text-stone-700">#{order.order_number}</span>
@@ -388,13 +388,13 @@ function ProductsTab({ token }: { token: string }) {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {filtered.map((product: Doc<"products">) => {
-            const image = Array.isArray(product.images) ? product.images[0] : null;
+            const image = product.images?.[0];
             return (
               <Card key={product._id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
                   {image && (
                     <img
-                      src={typeof image === "string" ? image : image.url}
+                      src={image}
                       alt={product.name}
                       className="w-full aspect-square object-cover rounded-xl mb-3"
                     />
