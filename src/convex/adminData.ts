@@ -2,11 +2,33 @@ import { query, mutation, QueryCtx, MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
 
 /**
- * Verify the supplied admin session token. Throws "Unauthorized" if the
- * token is missing, doesn't match a session, or has expired. Expired
- * sessions are garbage-collected on read.
+ * Verify the supplied admin session token from inside a query
+ * (read-only ctx). Throws "Unauthorized" if missing or expired.
+ * Expired rows are not deleted from reads — they're cleaned up by
+ * the writer variant below or by `adminLogout`.
  */
-async function requireAdminSession(ctx: QueryCtx | MutationCtx, token: string) {
+async function requireAdminSessionRead(
+  ctx: QueryCtx,
+  token: string,
+) {
+  const session = await ctx.db
+    .query("adminSessions")
+    .withIndex("by_token", (q) => q.eq("token", token))
+    .first();
+  if (!session) throw new Error("Unauthorized");
+  if (session.expiresAt < Date.now()) throw new Error("Unauthorized");
+  return session;
+}
+
+/**
+ * Verify the supplied admin session token from inside a mutation
+ * (write ctx). Throws "Unauthorized" if missing or expired.
+ * Expired rows are deleted as a side effect (best-effort GC).
+ */
+async function requireAdminSession(
+  ctx: MutationCtx,
+  token: string,
+) {
   const session = await ctx.db
     .query("adminSessions")
     .withIndex("by_token", (q) => q.eq("token", token))
@@ -24,7 +46,7 @@ async function requireAdminSession(ctx: QueryCtx | MutationCtx, token: string) {
 export const getDashboardStats = query({
   args: { token: v.string() },
   handler: async (ctx, args) => {
-    await requireAdminSession(ctx, args.token);
+    await requireAdminSessionRead(ctx, args.token);
 
     const [products, categories, ordersAll, users] = await Promise.all([
       ctx.db.query("products").collect(),
@@ -65,7 +87,7 @@ export const getDashboardStats = query({
 export const adminGetAllOrders = query({
   args: { token: v.string() },
   handler: async (ctx, args) => {
-    await requireAdminSession(ctx, args.token);
+    await requireAdminSessionRead(ctx, args.token);
     const orders = await ctx.db.query("orders").collect();
     return orders.sort(
       (a, b) =>
@@ -104,7 +126,7 @@ export const adminUpdateOrderStatus = mutation({
 export const adminGetAllProducts = query({
   args: { token: v.string() },
   handler: async (ctx, args) => {
-    await requireAdminSession(ctx, args.token);
+    await requireAdminSessionRead(ctx, args.token);
     const products = await ctx.db.query("products").collect();
     return products.sort((a, b) => b.createdAt - a.createdAt);
   },
@@ -115,7 +137,7 @@ export const adminGetAllProducts = query({
 export const adminGetAllCategories = query({
   args: { token: v.string() },
   handler: async (ctx, args) => {
-    await requireAdminSession(ctx, args.token);
+    await requireAdminSessionRead(ctx, args.token);
     return await ctx.db.query("categories").collect();
   },
 });
@@ -125,7 +147,7 @@ export const adminGetAllCategories = query({
 export const adminGetContactMessages = query({
   args: { token: v.string() },
   handler: async (ctx, args) => {
-    await requireAdminSession(ctx, args.token);
+    await requireAdminSessionRead(ctx, args.token);
     const messages = await ctx.db.query("contactMessages").collect();
     return messages.sort((a, b) => b.createdAt - a.createdAt);
   },

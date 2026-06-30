@@ -77,7 +77,9 @@ export const verifyAdminCredentials = action({
 
 /**
  * Verify a stored session token. Returns the username and expiration
- * if valid, or null if missing/expired. Expired sessions are garbage-collected.
+ * if valid, or null if missing/expired. This is a read-only query, so
+ * expired session rows are NOT deleted here — they get cleaned up by
+ * `adminLogout` or any writer-validated mutation (best-effort GC).
  */
 export const verifyAdminSession = query({
   args: { token: v.string() },
@@ -87,10 +89,7 @@ export const verifyAdminSession = query({
       .withIndex("by_token", (q) => q.eq("token", args.token))
       .first();
     if (!session) return null;
-    if (session.expiresAt < Date.now()) {
-      await ctx.db.delete(session._id);
-      return null;
-    }
+    if (session.expiresAt < Date.now()) return null;
     return { username: session.username, expiresAt: session.expiresAt };
   },
 });
