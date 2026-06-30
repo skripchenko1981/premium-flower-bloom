@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import { useMutation, useQuery } from "convex/react";
 import { api as convexApi } from "@/convex/_generated/api";
+import type { Doc } from "@/convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -211,7 +212,7 @@ function DashboardTab({ token }: { token: string }) {
           <CardContent>
             {stats.recent_orders?.length ? (
               <div className="space-y-3">
-                {stats.recent_orders.map((order) => (
+                {stats.recent_orders.map((order: { id: string; order_number: string; total_amount: number | undefined; status: string | undefined; created_at: number }) => (
                   <div key={order.id} className="flex items-center justify-between py-2 border-b border-stone-50 last:border-0">
                     <div>
                       <span className="text-sm font-medium text-stone-700">#{order.order_number}</span>
@@ -254,7 +255,7 @@ function OrdersTab({ token }: { token: string }) {
 
   if (!orders) return <TabLoading />;
 
-  const filtered = statusFilter ? orders.filter((o) => o.status === statusFilter) : orders;
+  const filtered = statusFilter ? orders.filter((o: Doc<"orders">) => o.status === statusFilter) : orders;
 
   const handleStatusChange = async (orderId: string, status: string) => {
     try {
@@ -297,7 +298,7 @@ function OrdersTab({ token }: { token: string }) {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((order) => (
+              {filtered.map((order: Doc<"orders">) => (
                 <tr key={order._id} className="border-b border-stone-50 hover:bg-stone-50/50 transition-colors">
                   <td className="p-4 font-medium text-stone-700">
                     #{String(order._id).slice(-6).toUpperCase()}
@@ -353,7 +354,7 @@ function ProductsTab({ token }: { token: string }) {
   if (!products) return <TabLoading />;
 
   const filtered = search
-    ? products.filter((p) => p.name?.toLowerCase().includes(search.toLowerCase()))
+    ? products.filter((p: Doc<"products">) => p.name?.toLowerCase().includes(search.toLowerCase()))
     : products;
 
   return (
@@ -386,7 +387,7 @@ function ProductsTab({ token }: { token: string }) {
         </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {filtered.map((product) => {
+          {filtered.map((product: Doc<"products">) => {
             const image = Array.isArray(product.images) ? product.images[0] : null;
             return (
               <Card key={product._id} className="hover:shadow-md transition-shadow">
@@ -441,7 +442,7 @@ function CategoriesTab({ token }: { token: string }) {
         <p className="text-stone-400">Категорій ще немає</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {categories.map((cat) => (
+          {categories.map((cat: Doc<"categories">) => (
             <Card key={cat._id} className="hover:shadow-md transition-shadow">
               <CardContent className="p-5 flex items-center justify-between gap-4">
                 {cat.image && (
@@ -511,8 +512,7 @@ function MessagesTab({ token }: { token: string }) {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-2xl sm:text-3xl font-light text-stone-900 font-serif tracking-tight">Повідомлення</h1>
-        <span className="text-sm text-stone-500">
-          {messages.filter((m) => !m.read).length} непрочитаних
+        <span className="text-sm text-stone-500">            {messages.filter((m: Doc<"contactMessages">) => !m.read).length} непрочитаних
         </span>
       </div>
 
@@ -525,7 +525,7 @@ function MessagesTab({ token }: { token: string }) {
         </Card>
       ) : (
         <div className="space-y-3">
-          {messages.map((msg) => (
+          {messages.map((msg: Doc<"contactMessages">) => (
             <Card
               key={msg._id}
               className={`hover:shadow-md transition-shadow ${!msg.read ? "border-rose-200" : ""}`}
