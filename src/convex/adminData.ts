@@ -57,17 +57,17 @@ export const getDashboardStats = query({
 
     const total_revenue = ordersAll
       .filter((o) => o.status !== "cancelled")
-      .reduce((sum, o) => sum + (o.total ?? 0), 0);
+      .reduce((sum, o) => sum + o.total, 0);
 
     const recent_orders = [...ordersAll]
-      .sort((a, b) => (b.createdAt ?? b._creationTime) - (a.createdAt ?? a._creationTime))
+      .sort((a, b) => b.createdAt - a.createdAt)
       .slice(0, 5)
       .map((o) => ({
         id: o._id,
         order_number: String(o._id).slice(-6).toUpperCase(),
         total_amount: o.total,
         status: o.status,
-        created_at: o.createdAt ?? o._creationTime,
+        created_at: o.createdAt,
       }));
 
     return {
@@ -90,8 +90,7 @@ export const adminGetAllOrders = query({
     await requireAdminSessionRead(ctx, args.token);
     const orders = await ctx.db.query("orders").take(1000);
     return orders.sort(
-      (a, b) =>
-        (b.createdAt ?? b._creationTime) - (a.createdAt ?? a._creationTime),
+      (a, b) => b.createdAt - a.createdAt,
     );
   },
 });
