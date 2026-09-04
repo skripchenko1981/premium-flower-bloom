@@ -109,7 +109,7 @@ export default function Landing() {
             >
               <Badge className="mb-6 bg-rose-100 text-rose-600 hover:bg-rose-100 border-none px-4 py-2 text-sm">
                 <Sparkles className="w-3.5 h-3.5 mr-2" />
-                Преміум букети з доставкою
+                Свіжа сезонна колекція вже доступна
               </Badge>
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-light tracking-tight text-stone-900 leading-[1.05] font-serif">
                 Квіти, що{" "}

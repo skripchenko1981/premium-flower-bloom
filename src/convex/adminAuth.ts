@@ -1,9 +1,6 @@
-"use node";
-
 import { action, query, mutation, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import { internal } from "./_generated/api";
-import crypto from "node:crypto";
 
 const SESSION_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
 
@@ -12,16 +9,14 @@ const SESSION_DURATION_MS = 24 * 60 * 60 * 1000; // 24 hours
  * Buffers of differing lengths are padded so the timing stays close.
  */
 function timingSafeEqualStr(a: string, b: string): boolean {
-  const aBuf = Buffer.from(a, "utf-8");
-  const bBuf = Buffer.from(b, "utf-8");
-  // XOR two equal-length buffers so timingSafeEqual doesn't throw.
-  const len = Math.max(aBuf.length, bBuf.length, 1);
-  const aPad = Buffer.alloc(len);
-  const bPad = Buffer.alloc(len);
-  aBuf.copy(aPad);
-  bBuf.copy(bPad);
-  const eq = crypto.timingSafeEqual(aPad, bPad);
-  return eq && aBuf.length === bBuf.length;
+  const maxLength = Math.max(a.length, b.length, 1);
+  let diff = a.length ^ b.length;
+
+  for (let i = 0; i < maxLength; i += 1) {
+    diff |= (a.charCodeAt(i) || 0) ^ (b.charCodeAt(i) || 0);
+  }
+
+  return diff === 0;
 }
 
 export const createSession = internalMutation({

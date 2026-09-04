@@ -524,7 +524,6 @@ function ProductsTab({ token }: { token: string }) {
             slug: form.slug,
             description: form.description,
             price: Number(form.price) || 0,
-            oldPrice: form.oldPrice ? Number(form.oldPrice) : undefined,
             category: form.category,
             images: form.imagesText
               .split(/\r?\n/)
@@ -532,6 +531,9 @@ function ProductsTab({ token }: { token: string }) {
               .filter(Boolean),
             inStock: form.inStock,
           };
+          if (form.oldPrice) {
+            Object.assign(payload, { oldPrice: Number(form.oldPrice) });
+          }
           try {
             if (editing) {
               await updateProduct({ ...payload, id: editing._id });
@@ -896,10 +898,16 @@ function CategoriesTab({ token }: { token: string }) {
             token,
             name: form.name,
             slug: form.slug,
-            description: form.description || undefined,
-            image: form.image || undefined,
-            order: form.order ? Number(form.order) : undefined,
           };
+          if (form.description) {
+            Object.assign(payload, { description: form.description });
+          }
+          if (form.image) {
+            Object.assign(payload, { image: form.image });
+          }
+          if (form.order) {
+            Object.assign(payload, { order: Number(form.order) });
+          }
           try {
             if (editing) {
               await updateCategory({ ...payload, id: editing._id });

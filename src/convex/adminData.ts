@@ -49,10 +49,10 @@ export const getDashboardStats = query({
     await requireAdminSessionRead(ctx, args.token);
 
     const [products, categories, ordersAll, users] = await Promise.all([
-      ctx.db.query("products").collect(),
-      ctx.db.query("categories").collect(),
-      ctx.db.query("orders").collect(),
-      ctx.db.query("users").collect(),
+      ctx.db.query("products").take(1000),
+      ctx.db.query("categories").take(1000),
+      ctx.db.query("orders").take(1000),
+      ctx.db.query("users").take(1000),
     ]);
 
     const total_revenue = ordersAll
@@ -88,7 +88,7 @@ export const adminGetAllOrders = query({
   args: { token: v.string() },
   handler: async (ctx, args) => {
     await requireAdminSessionRead(ctx, args.token);
-    const orders = await ctx.db.query("orders").collect();
+    const orders = await ctx.db.query("orders").take(1000);
     return orders.sort(
       (a, b) =>
         (b.createdAt ?? b._creationTime) - (a.createdAt ?? a._creationTime),
@@ -127,7 +127,7 @@ export const adminGetAllProducts = query({
   args: { token: v.string() },
   handler: async (ctx, args) => {
     await requireAdminSessionRead(ctx, args.token);
-    const products = await ctx.db.query("products").collect();
+    const products = await ctx.db.query("products").take(1000);
     return products.sort((a, b) => b.createdAt - a.createdAt);
   },
 });
@@ -138,7 +138,7 @@ export const adminGetAllCategories = query({
   args: { token: v.string() },
   handler: async (ctx, args) => {
     await requireAdminSessionRead(ctx, args.token);
-    return await ctx.db.query("categories").collect();
+    return await ctx.db.query("categories").take(1000);
   },
 });
 
@@ -148,7 +148,7 @@ export const adminGetContactMessages = query({
   args: { token: v.string() },
   handler: async (ctx, args) => {
     await requireAdminSessionRead(ctx, args.token);
-    const messages = await ctx.db.query("contactMessages").collect();
+    const messages = await ctx.db.query("contactMessages").take(1000);
     return messages.sort((a, b) => b.createdAt - a.createdAt);
   },
 });
