@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -24,6 +25,17 @@ import {
 import { Layout } from "@/components/Layout";
 import { demoCartItems } from "@/lib/data/products";
 
+type CartDisplayItem = {
+  _id: string;
+  productId: string;
+  productName: string;
+  productImage: string;
+  price: number;
+  quantity: number;
+  size: string;
+  withCard: boolean;
+};
+
 export default function Cart() {
   const navigate = useNavigate();
   const [promoCode, setPromoCode] = useState("");
@@ -31,26 +43,30 @@ export default function Cart() {
   const [promoDiscount, setPromoDiscount] = useState(0);
   const [promoLoading, setPromoLoading] = useState(false);
   const [promoError, setPromoError] = useState("");
-  const [useLocalData] = useState(true);
+  const [localCartItems, setLocalCartItems] =
+    useState<CartDisplayItem[]>(demoCartItems);
 
   const cartItems = useQuery(api.shop.getCartItems);
   const updateQuantity = useMutation(api.shop.updateCartItemQuantity);
   const removeItem = useMutation(api.shop.removeFromCart);
 
-  const items = cartItems && cartItems.length > 0 ? cartItems.map((item: any) => ({
+  const hasBackendItems = (cartItems?.length ?? 0) > 0;
+  const backendDisplayItems: CartDisplayItem[] = cartItems?.map((item) => ({
     ...item,
     productName: "Product",
     productImage: "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=400&q=80",
-    size: item.size || "M",
+    size: item.size ?? "M",
+    withCard: item.withCard ?? false,
     price: 1299,
-  })) : demoCartItems;
+  })) ?? [];
+  const items = hasBackendItems ? backendDisplayItems : localCartItems;
 
-  const subtotal = items.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
+  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const discount = promoApplied ? Math.round(subtotal * (promoDiscount / 100)) : 0;
-  const shippingCost = subtotal > 2000 ? 0 : 150;
+  const shippingCost: number = subtotal > 2000 ? 0 : 150;
   const total = subtotal - discount + shippingCost;
 
-  const handleApplyPromo = async () => {
+  const handleApplyPromo = () => {
     if (!promoCode.trim()) return;
     setPromoLoading(true);
     setPromoError("");
@@ -71,14 +87,30 @@ export default function Cart() {
     setPromoLoading(false);
   };
 
-  const handleQuantity = (id: string, qty: number) => {
-    if (useLocalData) return;
-    updateQuantity({ cartItemId: id as any, quantity: qty });
+  const handleQuantity = async (id: string, qty: number) => {
+    if (hasBackendItems) {
+      await updateQuantity({ cartItemId: id as Id<"cartItems">, quantity: qty });
+      return;
+    }
+
+    setLocalCartItems((currentItems) =>
+      qty <= 0
+        ? currentItems.filter((item) => item._id !== id)
+        : currentItems.map((item) =>
+            item._id === id ? { ...item, quantity: qty } : item,
+          ),
+    );
   };
 
-  const handleRemove = (id: string) => {
-    if (useLocalData) return;
-    removeItem({ cartItemId: id as any });
+  const handleRemove = async (id: string) => {
+    if (hasBackendItems) {
+      await removeItem({ cartItemId: id as Id<"cartItems"> });
+      return;
+    }
+
+    setLocalCartItems((currentItems) =>
+      currentItems.filter((item) => item._id !== id),
+    );
   };
 
   return (
@@ -105,7 +137,7 @@ export default function Cart() {
               <ShoppingCart className="w-16 h-16 text-stone-300 mx-auto mb-4" />
               <h2 className="text-xl font-light text-stone-800 font-serif">Ваш кошик порожній</h2>
               <p className="text-stone-400 mt-1 mb-6">Додайте чудові букети, щоб розпочати</p>
-              <Button onClick={() => navigate("/catalog")} className="bg-rose-400 hover:bg-rose-500 text-white rounded-xl">
+              <Button onClick={() => { void navigate("/catalog"); }} className="bg-rose-400 hover:bg-rose-500 text-white rounded-xl">
                 Переглянути каталог
                 <ArrowRight className="ml-2 w-4 h-4" />
               </Button>
@@ -115,7 +147,7 @@ export default function Cart() {
               {/* Cart Items */}
               <div className="lg:col-span-2 space-y-4">
                 <AnimatePresence>
-                  {items.map((item: any) => (
+                  {items.map((item) => (
                     <motion.div
                       key={item._id}
                       initial={{ opacity: 0, x: -20 }}
@@ -145,7 +177,7 @@ export default function Cart() {
                         <div className="mt-3 flex items-center justify-between">
                           <div className="flex items-center gap-1 bg-stone-50 rounded-full p-0.5">
                             <button
-                              onClick={() => handleQuantity(item._id, item.quantity - 1)}
+                              onClick={() => { void handleQuantity(item._id, item.quantity - 1); }}
                               className="p-1.5 rounded-full hover:bg-white hover:shadow-sm transition-all"
                             >
                               <Minus className="w-3.5 h-3.5 text-stone-500" />
@@ -154,7 +186,7 @@ export default function Cart() {
                               {item.quantity}
                             </span>
                             <button
-                              onClick={() => handleQuantity(item._id, item.quantity + 1)}
+                              onClick={() => { void handleQuantity(item._id, item.quantity + 1); }}
                               className="p-1.5 rounded-full hover:bg-white hover:shadow-sm transition-all"
                             >
                               <Plus className="w-3.5 h-3.5 text-stone-500" />
@@ -166,7 +198,7 @@ export default function Cart() {
                         </div>
                       </div>
                       <button
-                        onClick={() => handleRemove(item._id)}
+                        onClick={() => { void handleRemove(item._id); }}
                         className="self-start p-2 text-stone-300 hover:text-red-400 hover:bg-red-50 rounded-full transition-all shrink-0"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -205,7 +237,7 @@ export default function Cart() {
                         {shippingCost === 0 ? (
                           <span className="text-green-600">Безкоштовно</span>
                         ) : (
-                          `₴${shippingCost}`
+                          `₴${shippingCost.toString()}`
                         )}
                       </span>
                     </div>
@@ -269,7 +301,7 @@ export default function Cart() {
                   </div>
 
                   <Button
-                    onClick={() => navigate("/checkout")}
+                    onClick={() => { void navigate("/checkout"); }}
                     size="lg"
                     className="w-full mt-6 bg-stone-800 hover:bg-rose-400 text-white rounded-xl py-6 text-base font-normal transition-all duration-300"
                   >
